@@ -1,0 +1,117 @@
+/* Tổng thể ứng dụng */
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 95vh;
+  background-color: #f3f4f6;
+}
+
+/* Hộp đăng nhập */
+.login-container {
+  background-color: #69c3d3;
+  border-radius: 10px;
+  padding: 20px 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 350px;
+}
+
+/* Tiêu đề */
+h1 {
+  font-size: 2em;
+  margin-bottom: 0.2em;
+  font-weight: bold;
+}
+
+h2 {
+  margin-top: -10px;
+  margin-bottom: 1.5em;
+  color: #555;
+  font-style: italic;
+}
+
+/* Ô chứa các input */
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Định dạng ô nhập */
+.input-field {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Phần chứa ô mật khẩu và biểu tượng mắt */
+.password-container {
+  position: relative; /* Để biểu tượng nằm trên ô nhập */
+}
+
+/* Biểu tượng mắt */
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px; /* Đặt biểu tượng ở góc phải */
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2em;
+  color: #007bff;
+}
+
+.toggle-password:hover {
+  color: #0056b3;
+}
+
+/* Dòng Quên mật khẩu */
+.forgot-password {
+  display: block; /* Đảm bảo dòng nằm riêng biệt */
+  text-align: right;
+  margin-top: 5px;
+  font-size: 0.9em;
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Nút đăng nhập và đăng ký */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 60px;
+  margin-top: 20px;
+}
+
+.btn-Login {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+  width: 300px;
+}
+.btn-Signup {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+  width: 300px;
+}
+.btn:hover {
+  background-color: #0056b3;
+}

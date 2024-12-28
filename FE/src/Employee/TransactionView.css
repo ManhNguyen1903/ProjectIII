@@ -1,0 +1,33 @@
+.transaction {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Đẩy nội dung và nút ra hai đầu */
+  height: 100%; /* Chiều cao chiếm toàn bộ container */
+}
+
+.Bill {
+  flex-grow: 1; /* Để phần nội dung hóa đơn chiếm không gian còn lại */
+  overflow-y: auto;
+  max-width: 100%;
+}
+
+.transaction-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  font-size: 20px;
+}
+
+.checkout-btn {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  margin-top: auto; /* Đẩy nút xuống dưới */
+}
+
+.checkout-btn:hover {
+  background-color: #45a049;
+}

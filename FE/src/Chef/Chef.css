@@ -1,0 +1,84 @@
+/* Toàn bộ giao diện */
+.chef {
+    font-family: Arial, sans-serif;
+    color: #333;
+  }
+  .Name{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    color: #2c2c72;
+    font-size: 24px;
+    font-weight: bold;
+
+  }
+  .Name-order{
+    margin-left: 20%;
+  }
+
+  .Name-pick{
+    margin-right: 20%;
+  }
+  
+  .menu-btn {
+    background: none;
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  /* Nội dung */
+  .chef-content {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  /* Bảng */
+  .chef-table {
+    flex: 1;
+    margin: 0 10px;
+    overflow-y: scroll;
+    max-width: 100%; /* Đảm bảo không vượt quá chiều rộng của phần tử chứa */
+    max-height: 480px; /* Đặt chiều cao tối đa cho phần tử */
+  }
+  
+  .chef-table h2 {
+    text-align: center;
+    color: #2c2c72;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  table th,
+  table td {
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  table th {
+    background-color: #f4f4f4;
+  }
+  
+  .transfer-btn {
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .transfer-btn:hover {
+    background-color: #4545a3;
+  }
+  
+  /* Mũi tên giữa */
+  .chef-arrow {
+    font-size: 24px;
+    color: #2c2c72;
+    margin-top: 15%;
+  }
+  

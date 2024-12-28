@@ -1,0 +1,87 @@
+/* Toàn bộ trang */
+.app {
+  display: flex; /* Kích hoạt Flexbox */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  height: 95vh; /* Chiều cao chiếm toàn bộ màn hình */
+  margin: 0; /* Xóa khoảng cách mặc định của trình duyệt */
+  background-color: #f3f4f6; /* Màu nền toàn trang */
+}
+
+/* Container đăng ký */
+.sign-up-container {
+  background-color: #69c3d3;
+  border-radius: 10px;
+  padding: 20px 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 350px;
+  max-width: 100%; /* Đảm bảo container không vượt quá chiều rộng màn hình */
+  box-sizing: border-box; /* Đảm bảo padding không làm thay đổi kích thước */
+}
+
+/* Tiêu đề */
+h1 {
+  font-size: 2em;
+  margin-bottom: 0.2em;
+  font-weight: bold;
+}
+
+/* Container cho các ô input */
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Các ô nhập liệu */
+.input-field {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Hiển thị mật khẩu */
+.password-container {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2em;
+  color: #007bff;
+}
+
+.toggle-password:hover {
+  color: #0056b3;
+}
+
+/* Nút đăng ký */
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.btn-Signup {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+  width: 100%;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}

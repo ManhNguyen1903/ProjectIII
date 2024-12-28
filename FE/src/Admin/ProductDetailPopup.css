@@ -1,0 +1,45 @@
+.header {
+    display: flex;
+  }
+
+/* .close-button-productdetail {
+  background: none;
+  border: none;
+  font-size: 35px;
+  cursor: pointer;
+  color: #333;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+
+.close-button-productdetail:hover {
+    background-color: red;
+    color: black;
+} */
+.header h2{
+    color:rgb(97, 76, 216);
+    
+}
+.close-button-productdetail {
+    position: absolute; /* Định vị nút */
+    top: 10px;          /* Căn chỉnh cách mép trên */
+    right: 10px;        /* Căn chỉnh cách mép phải */
+    width: 30px;        /* Chiều rộng của nút */
+    height: 30px;       /* Chiều cao của nút */
+    background: none;   /* Xóa nền */
+    border: none;       /* Xóa viền */
+    cursor: pointer;    /* Thêm con trỏ chỉ tay khi di chuột */
+    color: #333;        /* Màu của biểu tượng */
+    font-size: 24px;    /* Kích thước biểu tượng */
+    display: flex;      /* Định dạng để căn giữa nội dung */
+    align-items: center; /* Căn giữa dọc */
+    justify-content: center; /* Căn giữa ngang */
+    padding: 0;         /* Xóa khoảng cách trong nút */
+  }
+  
+  .close-button-productdetail:hover {
+    background-color: red; /* Màu nền khi di chuột */
+    transform: scale(1.1); /* Phóng to nhẹ khi di chuột */
+  }
+  

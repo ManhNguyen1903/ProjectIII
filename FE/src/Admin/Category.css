@@ -1,0 +1,51 @@
+.category-management { 
+  font-family: Arial, sans-serif;
+}
+
+.navbar-category{
+  display: flex;
+  justify-content: space-between
+}
+.navbar-addEmployee {
+  display: flex;
+  justify-content: space-between
+}
+.table-container {
+  max-height: 520px; /* Chiều cao tối đa */
+  overflow-y: auto; /* Thêm thanh cuộn dọc */
+  border: 1px solid #ccc; /* Viền cho bảng */
+}
+
+.add-category-icon {
+  background-color: transparent; /* Xóa màu nền */
+  border: none; /* Xóa viền */
+  cursor: pointer; /* Hiển thị con trỏ pointer khi hover */
+  outline: none; /* Tắt đường viền khi nhấn vào icon */
+}
+.add-employee-icon{
+  background-color: transparent; /* Xóa màu nền */
+  border: none; /* Xóa viền */
+  cursor: pointer; /* Hiển thị con trỏ pointer khi hover */
+  outline: none; /* Tắt đường viền khi nhấn vào icon */
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #f4f4f4;
+  /* position: sticky; */
+  top: 0; /* Giữ cố định tiêu đề bảng */
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+  background-color: #f9f9f9;
+}

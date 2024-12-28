@@ -1,0 +1,9 @@
+/* App.css - Định dạng cho toàn bộ ứng dụng */
+
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 95vh;
+  background-color: #f3f4f6;
+}

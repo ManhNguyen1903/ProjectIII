@@ -1,0 +1,130 @@
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #211c6a;
+    padding: 10px 20px;
+    color: white;
+    height: 35px;
+  }
+  
+  .navbar-left, .navbar-right {
+    display: flex;
+    align-items: center;
+    width: 50%;
+  }
+  
+  .navbar-left {
+    justify-content: flex-start; /* Các mục bên trái vẫn căn trái */
+  }
+  
+  .navbar-right {
+    justify-content: flex-end; /* Các mục bên phải sẽ căn phải */
+  }
+  
+  .navbar-item {
+    margin-bottom: -18px;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px; /* Tăng padding để làm lớn hơn */
+    transition: background-color 0.3s, color 0.3s; /* Thêm hiệu ứng chuyển màu */
+  }
+  
+  .navbar-item-table {
+    margin-bottom: -18px;
+    text-decoration: none;
+    color: white; /* Nền trắng */
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px; /* Tăng padding để làm lớn hơn */
+    transition: background-color 0.3s, color 0.3s; /* Thêm hiệu ứng chuyển màu */
+  }
+  
+  .navbar-item-bill {
+    margin-left: 0; /* Đẩy phần tử về phía bên phải */
+    margin-right: auto; /* Đảm bảo không có margin-right */
+    margin-bottom: -18px;
+    text-decoration: none;
+    background-color: white; /* Nền trắng */
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    pointer-events: none;
+  }
+  .navbar-item-table, .navbar-item, .navbar-item-bill {
+    padding: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+  }
+  
+  .navbar-item-table.active, .navbar-item.active, .navbar-item-bill.active {
+    background-color: white; /* Hoặc màu bạn muốn */
+    color: black;
+  
+  }
+  .navbar-item:hover {  background-color: #6861d3;;
+  }
+  
+  .navbar-search {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    margin-bottom: -18px;
+    margin-left: 20px;
+  }
+  
+  .navbar-profile {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 21px;
+    
+  }
+  
+  .dropbtn {
+    background-color: #211c6a;
+    color: white;
+    font-size: 30px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0px;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    right: 0;
+  }
+  
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  .dropdown:hover .dropbtn {
+    background-color: #1d185f;
+  }  

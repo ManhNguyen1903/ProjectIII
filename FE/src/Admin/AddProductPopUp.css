@@ -1,0 +1,102 @@
+/* Overlay mờ phía sau */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Nội dung pop-up */
+.popup-add_product {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px; /* Thay đổi kích thước chiều rộng */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  height: auto; /* Hoặc bạn có thể điều chỉnh chiều cao nếu cần */
+}
+
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+  text-align: left; /* Căn lề trái */
+  font-weight: bold;
+}
+
+
+.popup-add_product textarea {
+  width: 100%;
+}
+
+.popup-add_product select{
+  width: 101%;
+  padding: 8px;
+}
+.popup-overlay input{
+  width: 95%;
+  padding: 8px;
+}
+/* Placeholder chọn ảnh */
+.image-placeholder {
+  width: 100%;
+  height: 100px;
+  border: 2px dashed #ccc;
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #888;
+  font-size: 14px;
+  text-align: center;
+}
+
+.image-placeholder:hover {
+  border-color: #888;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.save-button,
+.close-button {
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.save-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.close-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #218838;
+}
+
+.close-button:hover {
+  background-color: #c82333;
+}

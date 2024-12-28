@@ -1,0 +1,80 @@
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .popup-content {
+    background: #e0f7fa;
+    border-radius: 10px;
+    padding: 20px;
+    width: 400px;
+    position: relative;
+  }
+  
+  .popup-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  .popup-body p {
+    margin: 5px 0;
+    font-size: 16px;
+  }
+  
+  .popup-items {
+    background-color: rgb(255, 255, 255);
+    margin-top: 15px; 
+    overflow-y: auto;
+    max-width: 100%; /* Đảm bảo không vượt quá chiều rộng của phần tử chứa */
+    max-height: 400px; /* Đặt chiều cao tối đa cho phần tử */
+    border-radius: 10px;
+  }
+  
+  .popup-items table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .popup-items th,
+  .popup-items td {
+    text-align: left;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+  }
+  .row-end{
+    display: flex;
+  }
+  .close-btn,.complete-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+    display: block;
+    width: 100%;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  .complete-btn{
+    background: #4caf50;
+    color: white;
+  }
+  .complete-btn:hover {
+    background: #45a049;
+  }
+  .close-btn:hover{
+    background: rgb(211, 37, 37);
+  }
+  
