@@ -1,32 +1,37 @@
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
+const express = require('express');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const cors = require('cors'); // Make sure CORS is imported if required
 
-import express from 'express'
-import { mapOrder } from '~/utils/sorts.js'
+// Load environment variables
+dotenv.config();
 
-const app = express()
+const app = express();
 
-const hostname = 'localhost'
-const port = 8017
+// Middleware for parsing JSON and enabling CORS (if required)
+app.use(express.json());
+app.use(cors()); // Enable CORS for all incoming requests (you can configure if needed)
 
-app.get('/', (req, res) => {
-  // Test Absolute import mapOrder
-  console.log(mapOrder(
-    [ { id: 'id-1', name: 'One' },
-      { id: 'id-2', name: 'Two' },
-      { id: 'id-3', name: 'Three' },
-      { id: 'id-4', name: 'Four' },
-      { id: 'id-5', name: 'Five' } ],
-    ['id-5', 'id-4', 'id-2', 'id-3', 'id-1'],
-    'id'
-  ))
-  res.end('<h1>Hello World!</h1><hr>')
-})
+// Import routes
+const categoryRoutes = require('./routes/CategoryRoutes');
+// Use routes
+app.use('/api/categories', categoryRoutes);
 
-app.listen(port, hostname, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Hello Trung Quan Dev, I am running at ${ hostname }:${ port }/`)
-})
+const employeeRoutes = require('./routes/EmployeeRoutes');
+app.use('/api/employees', employeeRoutes);
+
+// Connect to MongoDB
+const dbUri = `${process.env.MONGODB_URI}${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
+
+mongoose
+  .connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to MongoDB');
+    // Start the server after MongoDB connection
+    app.listen(process.env.PORT, () => {
+      console.log(`Server running on port ${process.env.PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error.message);
+  });

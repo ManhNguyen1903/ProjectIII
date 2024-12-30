@@ -6,21 +6,31 @@ const EditEmployeePopup = ({ employee, onClose, onEdit, onDelete }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUpdatedEmployee({ ...updatedEmployee, [name]: value });
+    // Kiểm tra nếu là các trường trong bankInfo
+    if (name.includes("bankInfo")) {
+      const field = name.split(".")[1]; // Lấy phần bankName hoặc bankNumber
+      setUpdatedEmployee({
+        ...updatedEmployee,
+        bankInfo: { ...updatedEmployee.bankInfo, [field]: value },
+      });
+    } else {
+      setUpdatedEmployee({ ...updatedEmployee, [name]: value });
+    }
   };
 
   const handleEdit = () => {
-    if (!updatedEmployee.name || !updatedEmployee.phone) {
-      alert("Tên và Số điện thoại là bắt buộc!");
+    // Kiểm tra các trường bắt buộc
+    if (!updatedEmployee.fullname || !updatedEmployee.phoneNumber || !updatedEmployee.salary) {
+      alert("Tên, Số điện thoại và Lương là bắt buộc!");
       return;
     }
-    onEdit(updatedEmployee); // Gửi dữ liệu sửa đổi ra component cha
+    onEdit(updatedEmployee); // Gửi dữ liệu đã sửa về component cha
     onClose(); // Đóng popup sau khi sửa
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa nhân viên ${employee.name}?`)) {
-      onDelete(employee.id); // Gửi ID để xóa nhân viên trong component cha
+    if (window.confirm(`Bạn có chắc chắn muốn xóa nhân viên ${updatedEmployee.fullname}?`)) {
+      onDelete(updatedEmployee._id); // Gửi ID để xóa nhân viên trong component cha
       onClose(); // Đóng popup sau khi xóa
     }
   };
@@ -35,40 +45,40 @@ const EditEmployeePopup = ({ employee, onClose, onEdit, onDelete }) => {
         <div className="form-group">
           <label>Tên:</label>
           <input
-            name="name"
-            value={updatedEmployee.name}
+            name="fullname"
+            value={updatedEmployee.fullname}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>Số điện thoại:</label>
           <input
-            name="phone"
-            value={updatedEmployee.phone}
+            name="phoneNumber"
+            value={updatedEmployee.phoneNumber}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
-          <label>Tên NHNH:</label>
+          <label>Tên NH:</label>
           <input
-            name="bankname"
-            value={updatedEmployee.bankname || ""}
+            name="bankInfo.bankName"
+            value={updatedEmployee.bankInfo.bankName || ""}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>STK:</label>
           <input
-            name="stk"
-            value={updatedEmployee.stk || ""}
+            name="bankInfo.bankNumber"
+            value={updatedEmployee.bankInfo.bankNumber || ""}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>Ca làm:</label>
           <input
-            name="shift"
-            value={updatedEmployee.shift || ""}
+            name="time"
+            value={updatedEmployee.time || ""}
             onChange={handleChange}
           />
         </div>

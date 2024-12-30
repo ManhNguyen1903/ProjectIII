@@ -11,8 +11,6 @@ import TableAdminView from "./TableAdminView";
 import AddTablePopup from "./AddTablePopup";
 import EditTablePopup from "./EditTablePopup";
 import EmployeeList from "./EmployeeList";
-import AddEmployeePopup from "./AddEmployeePopup";
-import EditEmployeePopup from "./EditEmployeePopup";
 
 function Admin() {
   const [activeMenu, setActiveMenu] = useState("Quản lý sản phẩm");
@@ -78,27 +76,6 @@ function Admin() {
     setSelectedTable(null);
   };
 
-  const [employees, setEmployees] = useState([
-    { id: 1, name: "Nguyen Van A", phone: "0123456789", stk: "12345678", shift: "Sáng", salary: "10,000,000" },
-    { id: 2, name: "Tran Van B", phone: "0987654321", stk: "87654321", shift: "Chiều", salary: "12,000,000" },
-  ]);
-
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-
-  // Thêm nhân viên mới
-  const handleAddEmployee = (newEmployee) => {
-    setEmployees([...employees, { ...newEmployee, id: Date.now() }]);
-  };
-
-  // Sửa thông tin nhân viên
-  const handleEditEmployee = (updatedEmployee) => {
-    setEmployees(employees.map((emp) => (emp.id === updatedEmployee.id ? updatedEmployee : emp)));
-  };
-
-  // Xóa nhân viên
-  const handleDeleteEmployee = (id) => {
-    setEmployees(employees.filter((emp) => emp.id !== id));
-  };
   return (
     <div className="admin-container">
       {/* Navbar trên cùng */}
@@ -212,44 +189,8 @@ function Admin() {
             </div>
           )}
           {activeMenu === "Quản lý danh mục" && <CategoryManagement />}
-          {/* Các menu khác */}
-          {activeMenu === "Quản lý nhân viên" && (
-            <div>
-              {/* Thanh quản lý nhân viên */}
-              <div className="navbar-addEmployee">
-                <h2>Quản lý nhân viên</h2>
-                <button
-                  className="add-employee-icon"
-                  onClick={() => setIsAdding(true)} // Đảm bảo bạn đặt setIsAdding thay vì isAdding
-                >
-                  <FontAwesomeIcon icon={faPlus} size="2x" />
-                </button>
-                {/* Popup thêm nhân viên */}
-                {isAdding && (
-                  <AddEmployeePopup
-                    onClose={() => setIsAdding(false)} // Đóng popup khi nhấn Hủy hoặc Thêm
-                    onAdd={handleAddEmployee} // Hàm xử lý thêm nhân viên
-                  />
-                )}
-              </div>
-
-              {/* Danh sách nhân viên */}
-              <EmployeeList
-                employees={employees} // Danh sách nhân viên
-                setEmployees={setEmployees} // Hàm cập nhật danh sách nhân viên
-              />
-
-              {/* Popup sửa thông tin nhân viên */}
-              {selectedEmployee && (
-                <EditEmployeePopup
-                  employee={selectedEmployee} // Dữ liệu của nhân viên được chọn
-                  onClose={() => setSelectedEmployee(null)} // Đóng popup khi nhấn nút Đóng hoặc Lưu
-                  onEdit={handleEditEmployee} // Hàm xử lý cập nhật nhân viên
-                  onDelete={handleDeleteEmployee} // Hàm xử lý xóa nhân viên
-                />
-              )}
-            </div>
-          )}
+          
+          {activeMenu === "Quản lý nhân viên" && <EmployeeList />}
 
           {activeMenu === "Quản lý bàn" && (
             <div>

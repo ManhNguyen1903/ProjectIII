@@ -3,11 +3,13 @@ import "./AddEmployeePopup.css";
 
 const AddEmployeePopup = ({ onClose, onAdd }) => {
   const [employee, setEmployee] = useState({
-    name: "",
-    phone: "",
-    bankname: "",
-    stk: "",
-    shift: "",
+    fullname: "",
+    phoneNumber: "",
+    bankInfo: {
+      bankName: "",
+      bankNumber: "",
+    },
+    time: "", // Ca làm (time)
     salary: "",
   });
 
@@ -15,12 +17,21 @@ const AddEmployeePopup = ({ onClose, onAdd }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEmployee({ ...employee, [name]: value });
+    // Xử lý trường hợp có object bankInfo
+    if (name.includes("bankInfo")) {
+      const field = name.split(".")[1]; // Lấy phần bankName hoặc bankNumber
+      setEmployee({
+        ...employee,
+        bankInfo: { ...employee.bankInfo, [field]: value },
+      });
+    } else {
+      setEmployee({ ...employee, [name]: value });
+    }
   };
 
   const handleAdd = () => {
     // Kiểm tra dữ liệu đầu vào
-    if (!employee.name || !employee.phone || !employee.salary) {
+    if (!employee.fullname || !employee.phoneNumber || !employee.salary) {
       setError("Vui lòng điền đầy đủ các trường bắt buộc!");
       return;
     }
@@ -38,48 +49,50 @@ const AddEmployeePopup = ({ onClose, onAdd }) => {
         </button>
         <h3>Thêm nhân viên</h3>
         {error && <p className="error-message">{error}</p>} {/* Hiển thị lỗi */}
+        
+        {/* Các trường nhập liệu */}
         <div className="form-group">
           <label>Tên:</label>
           <input
-            name="name"
+            name="fullname"
             placeholder="Tên nhân viên"
-            value={employee.name}
+            value={employee.fullname}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>Số điện thoại:</label>
           <input
-            name="phone"
+            name="phoneNumber"
             placeholder="Số điện thoại"
-            value={employee.phone}
+            value={employee.phoneNumber}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>Tên NH:</label>
           <input
-            name="bankname"
+            name="bankInfo.bankName"
             placeholder="Tên ngân hàng"
-            value={employee.bankname}
+            value={employee.bankInfo.bankName}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>STK:</label>
           <input
-            name="stk"
+            name="bankInfo.bankNumber"
             placeholder="Số tài khoản"
-            value={employee.stk}
+            value={employee.bankInfo.bankNumber}
             onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>Ca làm:</label>
           <input
-            name="shift"
+            name="time"
             placeholder="Ca làm"
-            value={employee.shift}
+            value={employee.time}
             onChange={handleChange}
           />
         </div>
@@ -92,6 +105,7 @@ const AddEmployeePopup = ({ onClose, onAdd }) => {
             onChange={handleChange}
           />
         </div>
+
         <div className="popup-buttons">
           <button className="cancel-button" onClick={onClose}>
             Hủy
