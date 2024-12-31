@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./Category.css"; // Đảm bảo thêm CSS
+import "./Category.css";
 import AddCategory from "./AddCategory";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -7,16 +7,15 @@ import EditCategory from "./EditCategory";
 import axios from "axios";
 
 function CategoryManagement() {
-  const [categories, setCategories] = useState([]); // Chưa lấy danh mục từ API
+  const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // Hàm gọi API để lấy danh mục khi component load
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8017/api/categories"); // Đảm bảo API server đang chạy và đường dẫn đúng
+        const response = await axios.get("http://localhost:8017/api/categories");
         setCategories(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -24,13 +23,16 @@ function CategoryManagement() {
     };
 
     fetchCategories();
-  }, []); // useEffect chạy khi component lần đầu tiên render
+  }, []);
 
   // Thêm danh mục
   const handleAddCategory = async (newCategory) => {
     try {
-      const response = await axios.post("http://localhost:8017/api/categories", newCategory);
-      setCategories([...categories, response.data]); // Cập nhật danh sách danh mục mới
+      const response = await axios.post(
+        "http://localhost:8017/api/categories",
+        newCategory
+      );
+      setCategories([...categories, response.data]);
     } catch (error) {
       console.error("Error adding category:", error);
     }
@@ -52,14 +54,15 @@ function CategoryManagement() {
   const handleUpdateCategory = async (updatedCategory) => {
     try {
       const response = await axios.put(
-        `http://localhost:8017/api/categories/${updatedCategory.id}`,
+        `http://localhost:8017/api/categories/${updatedCategory._id}`,
         updatedCategory
       );
       setCategories((prevCategories) =>
         prevCategories.map((cat) =>
-          cat.id === updatedCategory.id ? response.data : cat
+          cat._id === updatedCategory._id ? response.data : cat
         )
       );
+      handleCloseModal(); // Đóng modal khi cập nhật thành công
     } catch (error) {
       console.error("Error updating category:", error);
     }
@@ -68,10 +71,15 @@ function CategoryManagement() {
   // Xóa danh mục
   const handleDeleteCategory = async (id) => {
     try {
+      if (!id) {
+        console.error("Invalid category ID for deletion.");
+        return;
+      }
       await axios.delete(`http://localhost:8017/api/categories/${id}`);
       setCategories((prevCategories) =>
-        prevCategories.filter((cat) => cat.id !== id)
+        prevCategories.filter((cat) => cat._id !== id)
       );
+      handleCloseModal(); // Đóng modal khi xóa thành công
     } catch (error) {
       console.error("Error deleting category:", error);
     }
@@ -108,7 +116,7 @@ function CategoryManagement() {
           </thead>
           <tbody>
             {categories.map((category, index) => (
-              <tr key={category.id}>
+              <tr key={category._id}>
                 <td>{index + 1}</td>
                 <td>
                   <button

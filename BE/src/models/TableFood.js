@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const tableFoodSchema = new mongoose.Schema({
-  tableName: String,
-  status: String
+  tableName: { type: String, required: true },
+  status: { type: String, required: true },
 });
 
-module.exports = mongoose.model('TableFood', tableFoodSchema);
+module.exports = mongoose.model("TableFood", tableFoodSchema);

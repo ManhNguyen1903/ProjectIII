@@ -20,11 +20,14 @@ app.use('/api/categories', categoryRoutes);
 const employeeRoutes = require('./routes/EmployeeRoutes');
 app.use('/api/employees', employeeRoutes);
 
+const tableFoodRoutes = require("./routes/tableFoodRoutes");
+app.use("/api/tables", tableFoodRoutes);
+
 // Connect to MongoDB
 const dbUri = `${process.env.MONGODB_URI}${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
 
 mongoose
-  .connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(dbUri)
   .then(() => {
     console.log('Connected to MongoDB');
     // Start the server after MongoDB connection
