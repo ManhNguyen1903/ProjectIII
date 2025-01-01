@@ -12,6 +12,7 @@ function CategoryManagement() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  // Lấy danh sách categories khi component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -41,7 +42,7 @@ function CategoryManagement() {
   // Mở modal chỉnh sửa
   const handleEditClick = (category) => {
     setSelectedCategory(category);
-    setIsEditModalOpen(true);
+    setIsEditModalOpen(true); // Mở modal chỉnh sửa
   };
 
   // Đóng modal chỉnh sửa
@@ -62,7 +63,7 @@ function CategoryManagement() {
           cat._id === updatedCategory._id ? response.data : cat
         )
       );
-      handleCloseModal(); // Đóng modal khi cập nhật thành công
+      handleCloseModal(); // Đóng modal sau khi cập nhật
     } catch (error) {
       console.error("Error updating category:", error);
     }
@@ -77,7 +78,7 @@ function CategoryManagement() {
       }
       await axios.delete(`http://localhost:8017/api/categories/${id}`);
       setCategories((prevCategories) =>
-        prevCategories.filter((cat) => cat._id !== id)
+        prevCategories.filter((cat) => cat._id !== id) // Xóa danh mục trong list
       );
       handleCloseModal(); // Đóng modal khi xóa thành công
     } catch (error) {
@@ -120,7 +121,7 @@ function CategoryManagement() {
                 <td>
                   <button
                     className="category-name-button"
-                    onClick={() => handleEditClick(category)}
+                    onClick={() => handleEditClick(category)} // Khi click vào tên danh mục, mở modal
                   >
                     {category.name}
                   </button>
@@ -133,7 +134,7 @@ function CategoryManagement() {
 
       <EditCategory
         isOpen={isEditModalOpen}
-        category={selectedCategory}
+        category={selectedCategory} // Truyền selectedCategory vào EditCategory
         onClose={handleCloseModal}
         onUpdate={handleUpdateCategory}
         onDelete={handleDeleteCategory}

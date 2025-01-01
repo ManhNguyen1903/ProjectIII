@@ -24,9 +24,10 @@ const ProductAdmin = () => {
         console.error("Error fetching products or categories:", error);
       }
     };
-
+  
     fetchProductsAndCategories();
   }, []);
+  
 
   // Lọc sản phẩm theo danh mục
   const filteredProducts =
@@ -43,22 +44,16 @@ const ProductAdmin = () => {
       formData.append("category", newProduct.category);
       formData.append("description", newProduct.description);
       if (newProduct.image) formData.append("image", newProduct.image);
-
+  
       const response = await axios.post("http://localhost:8017/api/products", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+  
+      // Cập nhật lại danh sách sản phẩm và lọc lại theo category
       setProducts((prevProducts) => [...prevProducts, response.data]);
+      setActiveFilter(activeFilter); // Giữ lại filter hiện tại
     } catch (error) {
       console.error("Error adding product:", error);
-    }
-  };
-  
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get("http://localhost:8017/api/products");
-      setProducts(response.data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
     }
   };
   
@@ -66,30 +61,47 @@ const ProductAdmin = () => {
   const handleUpdateProduct = async (updatedProduct) => {
     try {
       await axios.put(`http://localhost:8017/api/products/${updatedProduct._id}`, updatedProduct);
-      fetchProducts(); // Lấy danh sách mới
-      setSelectedProduct(null);
+      // Update the product in the state directly
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === updatedProduct._id ? updatedProduct : product
+        )
+      );
+      setSelectedProduct(null); // Close the product detail popup
     } catch (error) {
       console.error("Error updating product:", error);
     }
   };
-  
+
   const handleDeleteProduct = async (productId) => {
     try {
+      // Xóa sản phẩm từ backend
       await axios.delete(`http://localhost:8017/api/products/${productId}`);
-      fetchProducts(); // Lấy danh sách mới
+  
+      // Gọi lại API để lấy danh sách sản phẩm mới
+      fetchProductsAndCategories(); // Gọi lại để lấy danh sách sản phẩm và danh mục
+  
+      // Đóng popup chi tiết sản phẩm sau khi xóa
       setSelectedProduct(null);
     } catch (error) {
       console.error("Error deleting product:", error);
     }
   };
   
-
-  // Đóng popup khi sản phẩm bị xóa
   useEffect(() => {
-    if (selectedProduct && !products.find((p) => p._id === selectedProduct._id)) {
-      setSelectedProduct(null);
-    }
-  }, [products, selectedProduct]);
+    const fetchProductsAndCategories = async () => {
+      try {
+        const productResponse = await axios.get("http://localhost:8017/api/products");
+        const categoryResponse = await axios.get("http://localhost:8017/api/categories");
+        setProducts(productResponse.data);
+        setCategories(["Tất cả", ...categoryResponse.data.map((category) => category.name)]);
+      } catch (error) {
+        console.error("Error fetching products or categories:", error);
+      }
+    };
+  
+    fetchProductsAndCategories();
+  }, []); 
 
   return (
     <div className="product-management">
@@ -116,30 +128,38 @@ const ProductAdmin = () => {
         />
       </div>
       <div className="product-grid">
-        {filteredProducts.map((product) => (
-          <div key={product._id} className="product-card" onClick={() => setSelectedProduct(product)}>
-            <img
-              src={product.image || "path/to/default/image.jpg"}
-              alt={product.name}
-              className="product-image"
-            />
-            <div className="product-info">
-              <p className="product-name">{product.name}</p>
-              <p className="product-price">{product.price} VNĐ</p>
+        {filteredProducts.length === 0 ? (
+          <p>Không có sản phẩm nào.</p> // Show a message if no products match the filter
+        ) : (
+          filteredProducts.map((product) => (
+            <div
+              key={product._id}
+              className="product-card"
+              onClick={() => setSelectedProduct(product)}
+            >
+              <img
+                src={product.image || "path/to/default/image.jpg"}
+                alt={product.name}
+                className="product-image"
+              />
+              <div className="product-info">
+                <p className="product-name">{product.name}</p>
+                <p className="product-price">{product.price} VNĐ</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
       {selectedProduct && (
         <ProductDetailPopup
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
-          onUpdate={handleUpdateProduct}
-          onDelete={handleDeleteProduct}
+          onUpdate={handleUpdateProduct} // Update the product when modified
+          onDelete={handleDeleteProduct} // Delete the product when clicked
         />
       )}
     </div>
   );
-};
+}
 
 export default ProductAdmin;

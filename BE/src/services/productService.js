@@ -43,7 +43,7 @@ const updateProduct = async (id, productData) => {
     return updatedProduct;
   } catch (error) {
     throw new Error("Error updating product: " + error.message);
-  }
+  } 
 };
 
 // Xóa sản phẩm

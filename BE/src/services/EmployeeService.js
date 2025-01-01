@@ -9,7 +9,7 @@ async function getAllEmployees() {
 async function getEmployeeById(id) {
   return await Employee.findById(id);
 }
-
+ 
 // Tạo mới một nhân viên
 async function createEmployee(data) {
   const employee = new Employee(data);
