@@ -3,18 +3,24 @@ import "./ProductDetailPopup.css";
 
 const ProductDetailPopup = ({ product, onClose, onUpdate, onDelete }) => {
   const [editableProduct, setEditableProduct] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [image, setImage] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Khởi tạo dữ liệu sản phẩm khi `product` thay đổi
   useEffect(() => {
     if (product) {
       setEditableProduct({ ...product });
+      setImage(product.image);
+
+      fetch("http://localhost:8017/api/categories")
+        .then((response) => response.json())
+        .then((data) => setCategories(data))
+        .catch((error) => console.error("Error fetching categories:", error));
     }
   }, [product]);
 
-  // Nếu chưa có sản phẩm để chỉnh sửa, không hiển thị popup
   if (!editableProduct) return null;
 
-  // Xử lý khi người dùng thay đổi thông tin sản phẩm
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditableProduct((prevState) => ({
@@ -23,16 +29,76 @@ const ProductDetailPopup = ({ product, onClose, onUpdate, onDelete }) => {
     }));
   };
 
-  // Lưu thay đổi sản phẩm
-  const handleSave = () => {
-    onUpdate(editableProduct); // Gọi hàm `onUpdate` từ lớp cha với sản phẩm đã chỉnh sửa
-    onClose(); // Đóng popup
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setImage(reader.result);
+      reader.readAsDataURL(file);
+    }
   };
 
-  // Xóa sản phẩm
+  const handleSave = async () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    let updatedProduct = { ...editableProduct, image };
+
+    if (image && image !== product.image) {
+      const formData = new FormData();
+      formData.append("image", image);
+
+      try {
+        const uploadResponse = await fetch("http://localhost:8017/api/upload/image", {
+          method: "POST",
+          body: formData,
+        });
+        const uploadResult = await uploadResponse.json();
+        updatedProduct.image = uploadResult.url;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        setIsProcessing(false);
+        return;
+      }
+    }
+
+    fetch(`http://localhost:8017/api/products/${updatedProduct._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedProduct),
+    })
+      .then((response) => response.json())
+      .then((updated) => {
+        onUpdate(updated);
+        setIsProcessing(false);
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Error updating product:", error);
+        setIsProcessing(false);
+      });
+  };
+
   const handleDelete = () => {
-    onDelete(editableProduct.id); // Gọi hàm `onDelete` từ lớp cha với ID sản phẩm
-    onClose(); // Đóng popup
+    if (isProcessing) return;
+
+    const userConfirmed = window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?");
+    if (!userConfirmed) return;
+
+    setIsProcessing(true);
+
+    fetch(`http://localhost:8017/api/products/${editableProduct._id}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        onDelete(editableProduct._id);
+        setIsProcessing(false);
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Error deleting product:", error);
+        setIsProcessing(false);
+      });
   };
 
   return (
@@ -45,58 +111,59 @@ const ProductDetailPopup = ({ product, onClose, onUpdate, onDelete }) => {
           </button>
         </div>
 
-        {/* Form chỉnh sửa sản phẩm */}
         <div>
           <label>Loại:</label>
-          <input
-            type="text"
+          <select
             name="category"
-            value={editableProduct.category}
-            onChange={handleChange}
-          />
+            value={editableProduct.category._id || ""}
+            onChange={(e) =>
+              setEditableProduct({
+                ...editableProduct,
+                category: { _id: e.target.value },
+              })
+            }
+          >
+            <option value="">-- Chọn loại sản phẩm --</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label>Tên sản phẩm:</label>
-          <input
-            type="text"
-            name="name"
-            value={editableProduct.name}
-            onChange={handleChange}
-          />
+          <input type="text" name="name" value={editableProduct.name} onChange={handleChange} />
         </div>
 
         <div>
           <label>Giá:</label>
-          <input
-            type="number"
-            name="price"
-            value={editableProduct.price}
-            onChange={handleChange}
-          />
+          <input type="number" name="price" value={editableProduct.price} onChange={handleChange} />
         </div>
 
         <div>
           <label>Chú thích:</label>
-          <textarea
-            name="note"
-            value={editableProduct.note || ""}
-            onChange={handleChange}
-          />
+          <textarea name="note" value={editableProduct.note || ""} onChange={handleChange} />
         </div>
 
         <div>
-          <label>Ảnh sản phẩm:</label>
-          <div className="image-placeholder">
-            {editableProduct.image ? (
+          <input
+            type="file"
+            accept="image/*"
+            id="imageInput"
+            style={{ display: "none" }}
+            onChange={handleImageChange}
+          />
+          <div
+            className="image-placeholder"
+            onClick={() => document.getElementById("imageInput").click()}
+          >
+            {image ? (
               <img
-                src={editableProduct.image}
+                src={image}
                 alt="Product"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             ) : (
               "Không có ảnh"
@@ -104,12 +171,11 @@ const ProductDetailPopup = ({ product, onClose, onUpdate, onDelete }) => {
           </div>
         </div>
 
-        {/* Nút hành động */}
         <div className="button-group">
-          <button type="button" className="delete-button" onClick={handleDelete}>
+          <button type="button" className="delete-button" onClick={handleDelete} disabled={isProcessing}>
             Xóa
           </button>
-          <button type="button" className="save-button" onClick={handleSave}>
+          <button type="button" className="save-button" onClick={handleSave} disabled={isProcessing}>
             Lưu
           </button>
         </div>

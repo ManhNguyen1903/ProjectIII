@@ -1,30 +1,51 @@
 import React, { useState, useEffect } from "react";
 import "./AddProductPopUp.css";
-import { category } from "../Data";
 
-const AddProductPopup = ({ isOpen, onClose, onUpdate }) => {
+const AddProductPopup = ({ isOpen, onClose, onUpdate, existingProduct }) => {
   const [image, setImage] = useState(null); // State để lưu đường dẫn ảnh
   const [productData, setProductData] = useState({
-    type: "",
+    category: "", // Loại sản phẩm
     name: "",
     price: "",
     note: "",
   });
-  const [successMessage, setSuccessMessage] = useState("");
+  const [categories, setCategories] = useState([]); // Lưu trữ danh sách danh mục
+  const [successMessage, setSuccessMessage] = useState(""); // Thông báo lưu thành công
 
-  // Reset state khi pop-up được mở lại
+  // Gọi API lấy danh sách danh mục khi mở popup
   useEffect(() => {
-    if (!isOpen) {
-      setImage(null);
-      setProductData({
-        type: "",
-        name: "",
-        price: "",
-        note: "",
-      });
-      setSuccessMessage(""); // Reset thông báo thành công
+    if (isOpen) {
+      // Gọi API để lấy danh mục từ backend
+      fetch("http://localhost:8017/api/categories")
+        .then((response) => response.json())
+        .then((data) => {
+          setCategories(data); // Cập nhật danh mục trong state
+          
+          // Nếu là sửa sản phẩm, điền dữ liệu cũ vào form
+          if (existingProduct) {
+            setProductData({
+              name: existingProduct.name,
+              price: existingProduct.price,
+              category: existingProduct.category._id, // Đảm bảo sử dụng _id cho category
+              note: existingProduct.note,
+            });
+            setImage(existingProduct.image); // Set hình ảnh nếu có
+          } else {
+            // Reset các trường thông tin nếu không phải chỉnh sửa
+            setProductData({
+              category: "", 
+              name: "",
+              price: "",
+              note: "",
+            });
+            setImage(null);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching categories:", error);
+        });
     }
-  }, [isOpen]);
+  }, [isOpen, existingProduct]); // Chạy khi isOpen hoặc existingProduct thay đổi
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -42,35 +63,42 @@ const AddProductPopup = ({ isOpen, onClose, onUpdate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!productData.name || !productData.price) {
+
+    // Kiểm tra nếu người dùng chưa điền đủ thông tin
+    if (!productData.name || !productData.price || !productData.category) {
       alert("Vui lòng điền đầy đủ thông tin sản phẩm!");
       return;
     }
 
     const newProduct = {
-      id: Date.now(), // Tạo ID duy nhất cho sản phẩm
       ...productData,
       image,
     };
-    // Cập nhật danh sách sản phẩm cho Admin.js
-    onUpdate(newProduct);
 
-    // Hiển thị thông báo thành công
-    setSuccessMessage("Sản phẩm đã được lưu thành công!");
+    if (existingProduct) {
+      // Cập nhật sản phẩm (chỉnh sửa sản phẩm hiện tại)
+      onUpdate(newProduct, existingProduct._id); // Giả sử onUpdate sẽ xử lý việc cập nhật
+    } else {
+      // Thêm sản phẩm mới
+      onUpdate(newProduct); // Giả sử onUpdate sẽ xử lý việc thêm mới
+    }
 
-    // Đóng pop-up sau khi lưu
+    // Hiển thị thông báo thêm thành công
+    setSuccessMessage("Sản phẩm đã được thêm thành công!");
+
+    // Đóng popup sau khi lưu dữ liệu và reset thông báo
     setTimeout(() => {
       setSuccessMessage(""); // Reset thông báo sau khi đóng
-      onClose();
-    }, 2000);
+      onClose(); // Đóng popup
+    }, 700);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) return null; // Nếu popup không mở thì không hiển thị gì
 
   return (
     <div className="popup-overlay">
       <div className="popup-add_product">
-        <h2>Thêm sản phẩm</h2>
+        <h2>{existingProduct ? "Sửa sản phẩm" : "Thêm sản phẩm"}</h2>
         <form onSubmit={handleSubmit}>
           {successMessage && <div className="success-message">{successMessage}</div>}
 
@@ -81,12 +109,11 @@ const AddProductPopup = ({ isOpen, onClose, onUpdate }) => {
               name="category"
               value={productData.category}
               onChange={handleChange}
-              list="categories-list" // Gắn danh sách gợi ý
             >
               <option value="">-- Chọn loại sản phẩm --</option>
-              {category.map((item) => (
-                <option key={item.id} value={item.category}>
-                  {item.category}
+              {categories.map((item) => (
+                <option key={item._id} value={item._id}>
+                  {item.name} {/* Hiển thị tên danh mục */}
                 </option>
               ))}
             </select>
@@ -150,9 +177,9 @@ const AddProductPopup = ({ isOpen, onClose, onUpdate }) => {
           </div>
 
           <div className="button-group">
-          <button className="close-button" onClick={onClose}>&times;</button>
+            <button className="close-button" onClick={onClose}>&times;</button>
             <button type="submit" className="save-button">
-              Lưu
+              Thêm
             </button>
           </div>
         </form>

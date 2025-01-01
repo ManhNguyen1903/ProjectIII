@@ -111,7 +111,6 @@ function CategoryManagement() {
             <tr>
               <th>STT</th>
               <th>Tên danh mục</th>
-              <th>Số sản phẩm</th>
             </tr>
           </thead>
           <tbody>
@@ -126,7 +125,6 @@ function CategoryManagement() {
                     {category.name}
                   </button>
                 </td>
-                <td>{category.quantity}</td>
               </tr>
             ))}
           </tbody>
