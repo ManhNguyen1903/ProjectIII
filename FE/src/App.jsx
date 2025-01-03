@@ -1,19 +1,34 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Login/Login";
 import Admin from "./Admin/Admin";
 import SignUp from "./SignUp/SignUp";
 import Employee from "./Employee/Employee";
 import Chef from "./Chef/Chef";
+
 function App() {
+  // Kiểm tra trạng thái đăng nhập từ localStorage
+  const isAuthenticated = localStorage.getItem("token");
+
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/employee" element={<Employee />} />
-        <Route path="/chef" element={<Chef />} />
+        
+        {/* Kiểm tra nếu chưa đăng nhập sẽ chuyển hướng về Login */}
+        <Route 
+          path="/admin" 
+          element={isAuthenticated ? <Admin /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/employee" 
+          element={isAuthenticated ? <Employee /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/chef" 
+          element={isAuthenticated ? <Chef /> : <Navigate to="/" />} 
+        />
       </Routes>
     </Router>
   );

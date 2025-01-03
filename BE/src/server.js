@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 
+
 const cors = require('cors'); // Make sure CORS is imported if required
 
 
@@ -28,6 +29,9 @@ app.use("/api/tables", tableFoodRoutes);
 
 const productRoutes = require('./routes/productRoutes');
 app.use('/api', productRoutes);
+
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
 
 // Connect to MongoDB
 const dbUri = `${process.env.MONGODB_URI}${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
