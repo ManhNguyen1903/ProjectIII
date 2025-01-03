@@ -4,6 +4,7 @@
   
   .category {
     display: flex;
+    flex-wrap: wrap; /* Đảm bảo các mục tự xuống dòng */
     justify-content: flex-start;
     gap: 10px;
     margin-bottom: 20px;
@@ -16,8 +17,9 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 13px;
   }
+  
   
   .category-item:hover,
   .category-item.active {
