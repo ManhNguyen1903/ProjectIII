@@ -15,7 +15,7 @@ function TableView({ tables, onTableSelect, setTables, selectedFilter, setSelect
   const handleTableClick = (id) => {
     setTables((prevTables) =>
       prevTables.map((table) =>
-        table.id === id ? { ...table, status: "occupied" } : table
+        table._id === id ? { ...table, status: "occupied" } : table
       )
     );
   };
@@ -48,14 +48,14 @@ function TableView({ tables, onTableSelect, setTables, selectedFilter, setSelect
       <div className="table-list">
         {filteredTables.map((table) => (
           <div
-            key={table.id}
+            key={table._id}
             className={`table-item ${table.status === "occupied" ? "occupied" : ""}`}
             onClick={() => {
-              onTableSelect(table.id); // Gọi hàm khi chọn bàn
-              handleTableClick(table.id); // Cập nhật trạng thái của bàn
+              onTableSelect(table._id); // Gọi hàm khi chọn bàn
+              handleTableClick(table._id); // Cập nhật trạng thái của bàn
             }}
           >
-            {table.name}
+            {table.tableName}
           </div>
         ))}
       </div>

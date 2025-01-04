@@ -1,16 +1,31 @@
-import React, { useState } from "react";
-import "./MenuView.css"; // Create and style this as needed
-import { products } from "../Data";
+import React, { useState, useEffect } from "react";
+import "./MenuView.css";
+import axios from "axios";
 
 function MenuView({ onAddProduct }) {
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [activeFilter, setActiveFilter] = useState("Tất cả");
 
-  const categories = ["Tất cả", ...new Set(products.map((product) => product.category))];
+  useEffect(() => {
+    const fetchProductsAndCategories = async () => {
+      try {
+        const productResponse = await axios.get("http://localhost:8017/api/products");
+        const categoryResponse = await axios.get("http://localhost:8017/api/categories");
+        setProducts(productResponse.data);
+        setCategories(["Tất cả", ...categoryResponse.data.map((category) => category.name)]);
+      } catch (error) {
+        console.error("Error fetching products or categories:", error);
+      }
+    };
+  
+    fetchProductsAndCategories();
+  }, []);
 
   const filteredProducts =
     activeFilter === "Tất cả"
       ? products
-      : products.filter((product) => product.category === activeFilter);
+      : products.filter((product) => product.category.name === activeFilter);
 
   return (
     <div className="view">
@@ -31,7 +46,7 @@ function MenuView({ onAddProduct }) {
       <div className="menu">
         {filteredProducts.map((product) => (
           <div
-            key={product.id}
+            key={product._id}
             className="menu-item"
             onClick={() => onAddProduct(product)} // Gọi hàm khi nhấn vào sản phẩm
           >

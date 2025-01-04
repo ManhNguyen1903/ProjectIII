@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import Navbar from "./Navbar";
 import TableView from "./TableView";
 import MenuView from "./MenuView";
 import TransactionView from "./TransactionView";
-import { tables, productsData } from "../Data";
+import { productsData } from "../Data";
 import "./Employee.css";
+import axios from "axios";
 
 function Employee() {
   const [currentView, setCurrentView] = useState("phongban");
@@ -12,16 +13,31 @@ function Employee() {
   const [selectedTableId, setSelectedTableId] = useState(null);
   const [products, setProducts] = useState(productsData);
   const [showBillPopup, setShowBillPopup] = useState(false);
-  const [tableList, setTableList] = useState(tables); // Đảm bảo bạn quản lý danh sách bàn ở đây
+  const [tableList, setTableList] = useState([]); // Đảm bảo bạn quản lý danh sách bàn ở đây
+
+
+  useEffect(() => {
+    const fetchTables = async () => {
+      try {
+        const response = await axios.get("http://localhost:8017/api/tables"); // Thay thế bằng endpoint thực tế
+        setTableList(response.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách bàn:", error);
+      }
+    };
+    fetchTables();
+  }, []);
 
   const handleAddProduct = (product) => {
     if (!selectedTableId) {
       alert("Vui lòng chọn bàn trước khi thêm món!");
       return;
     }
-  
+     // Lấy thông tin bàn dựa vào selectedTableId
+    const selectedTable = tableList.find((table) => table._id === selectedTableId);
+
     const confirmed = window.confirm(
-      `Bạn có chắc chắn muốn thêm món "${product.name}" vào bàn ${selectedTableId}?`
+      `Bạn có chắc chắn muốn thêm món "${product.name}" vào bàn ${selectedTable.tableName}?`
     );
   
     if (confirmed) {
@@ -59,7 +75,7 @@ function Employee() {
     // Cập nhật trạng thái bàn về 'empty' và xóa dữ liệu sản phẩm của bàn đó
     setTableList((prevTables) =>
       prevTables.map((table) =>
-        table.id === selectedTableId
+        table._id === selectedTableId
           ? { ...table, status: "empty" } // Chuyển trạng thái bàn về "empty"
           : table
       )

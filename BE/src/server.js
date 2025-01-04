@@ -33,6 +33,9 @@ app.use('/api', productRoutes);
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
+const billRoutes = require("./routes/BillRoutes");
+app.use("/api/bills", billRoutes);
+
 // Connect to MongoDB
 const dbUri = `${process.env.MONGODB_URI}${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
 

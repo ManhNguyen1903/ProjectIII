@@ -14,4 +14,8 @@ router.put("/:id", tableFoodController.updateTable);
 // Xóa bàn
 router.delete("/:id", tableFoodController.deleteTable);
 
+router.get("/", tableFoodController.getTableBill);
+router.get("/:tableId", tableFoodController.selectTable);
+router.put("/:tableId/status", tableFoodController.updateTableStatus);
+
 module.exports = router;

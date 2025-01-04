@@ -14,7 +14,7 @@ function TransactionView({
   handlePayment, // Thêm hàm handlePayment
 }) {
   // Lấy thông tin bàn hiện tại
-  const table = tableData.find((t) => t.id === selectedTableId);
+  const table = tableData.find((t) => t._id === selectedTableId);
 
   return (
     <div className="transaction">
@@ -29,7 +29,7 @@ function TransactionView({
           </thead>
           <tbody>
             {products.map((product) => (
-              <tr key={product.id}>
+              <tr key={product._id}>
                 <td>
                   {product.name}
                   <div className="note">
@@ -39,14 +39,14 @@ function TransactionView({
                 <td className="quantity-cell">
                   <button
                     className="quantity-btn"
-                    onClick={() => decreaseQuantity(product.id)}
+                    onClick={() => decreaseQuantity(product._id)}
                   >
                     -
                   </button>
                   <span>{product.quantity}</span>
                   <button
                     className="quantity-btn"
-                    onClick={() => increaseQuantity(product.id)}
+                    onClick={() => increaseQuantity(product._id)}
                   >
                     +
                   </button>
@@ -60,7 +60,7 @@ function TransactionView({
 
       <div className="transaction-summary">
         <div className="notes">
-          <div>{table ? table.name : "Chưa chọn bàn"}</div>
+          <div>{table ? table.tableName : "Chưa chọn bàn"}</div>
         </div>
         <div className="total">
           Tổng tiền: {totalAmount.toLocaleString("vi-VN")}₫

@@ -35,7 +35,7 @@ const PopUpBill = ({ isVisible, products, totalAmount, onClose, handlePayment })
     printWindow.onafterprint = () => {
       printWindow.close(); // Đóng cửa sổ in khi in hoàn tất
     };
-  };
+  }; 
 
   return (
     <div className="popup">
