@@ -1,29 +1,44 @@
-const Bill = require("../models/Bill");
-const Product = require("../models/Product");
+const Bill = require('../models/Bill');
 
-exports.getBill = async (req, res) => {
+// Lấy tất cả hóa đơn
+exports.getAllBills = async (req, res) => {
   try {
-    const bills = await Bill.find().populate("idTable billInfo.productId");
-    res.status(200).json(bills);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const bills = await Bill.find().populate('idTable').populate('billInfo.productId');
+    res.json(bills);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
-exports.updateBill = async (req, res) => {
-  const { billId } = req.params;
-  const { billInfo, totalPrice, bartender } = req.body;
-
+// Lấy hóa đơn theo ID
+exports.getBillById = async (req, res) => {
   try {
-    const bill = await Bill.findByIdAndUpdate(
-      billId,
-      { billInfo, totalPrice, bartender, status: "processing" },
-      { new: true }
-    ).populate("billInfo.productId");
-
+    const bill = await Bill.findById(req.params.id).populate('idTable').populate('billInfo.productId');
     if (!bill) return res.status(404).json({ message: "Bill not found" });
-    res.status(200).json(bill);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.json(bill);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Tạo một hóa đơn mới
+exports.createBill = async (req, res) => {
+  try {
+    const newBill = new Bill(req.body);
+    await newBill.save();
+    res.status(201).json(newBill);
+  } catch (err) {
+    res.status(500).json({ message: "Error creating bill" });
+  }
+};
+
+// Cập nhật trạng thái hóa đơn (Thanh toán, đang xử lý...)
+exports.updateBillStatus = async (req, res) => {
+  try {
+    const bill = await Bill.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
+    if (!bill) return res.status(404).json({ message: "Bill not found" });
+    res.json(bill);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
   }
 };

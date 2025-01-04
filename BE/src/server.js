@@ -2,10 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
-
-
-const cors = require('cors'); // Make sure CORS is imported if required
-
+const cors = require('cors'); 
 
 // Load environment variables
 dotenv.config();
@@ -13,7 +10,7 @@ const app = express();
 
 // Middleware for parsing JSON and enabling CORS (if required)
 app.use(express.json());
-app.use(cors()); // Enable CORS for all incoming requests (you can configure if needed)
+app.use(cors()); 
 app.use("/uploads", express.static("uploads"));
 
 // Import routes
