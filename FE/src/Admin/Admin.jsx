@@ -5,6 +5,8 @@ import CategoryManagement from "./Category.jsx"
 import TableAdminView from "./TableAdminView";
 import EmployeeList from "./EmployeeList";
 import ProductAdmin from "./ProductAdmin";
+import TransactionHistory from "./TransactionHistory";
+import RevenueChart from "./RevenueChart.jsx"
 
 function Admin() {
   const [activeMenu, setActiveMenu] = useState("Quản lý sản phẩm");
@@ -54,7 +56,7 @@ function Admin() {
               className={activeMenu === "Doanh thu" ? "active" : ""}
               onClick={() => setActiveMenu("Doanh thu")}
             >
-              Doanh thu
+              Thống kê doanh thu
             </button>
           </ul>
         </div>
@@ -68,18 +70,10 @@ function Admin() {
           {activeMenu === "Quản lý nhân viên" && <EmployeeList />}
 
           {activeMenu === "Quản lý bàn" && <TableAdminView />}
-          {activeMenu === "Lịch sử giao dịch" && (
-            <div>
-              <h2>Lịch sử giao dịch</h2>
-              <p>Nội dung hiển thị lịch sử giao dịch...</p>
-            </div>
-          )}
-          {activeMenu === "Doanh thu" && (
-            <div> 
-              <h2>Doanh thu</h2>
-              <p>Nội dung hiển thị doanh thu...</p>
-            </div>
-          )}
+
+          {activeMenu === "Lịch sử giao dịch" && <TransactionHistory />}
+
+          {activeMenu === 'Doanh thu' && <RevenueChart />}
         </div>
       </div>
     </div>

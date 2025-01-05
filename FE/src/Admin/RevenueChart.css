@@ -1,0 +1,29 @@
+.chart-filters {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .chart-filters button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    color: #333;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .chart-filters button:hover {
+    background-color: #e6e6e6;
+    border-color: #b3b3b3;
+  }
+  
+  .chart-filters button.active {
+    background-color: #4412cf;
+    color: #fff;
+    border: 1px solid #0f9a1f;
+  }
+  

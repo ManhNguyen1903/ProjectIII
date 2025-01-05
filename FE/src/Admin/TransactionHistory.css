@@ -1,0 +1,78 @@
+.transaction-history {
+    margin: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .Truyvan{
+    padding: 5px 10px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+  .total-row{
+    margin-left: 45%;
+  }
+  .filter-section {
+    display: flex;
+    gap: 20px; /* Khoảng cách giữa các nhóm */
+    margin-bottom: 20px;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group label {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .filter-group input {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+
+  .transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    
+  }
+  .History{
+    height: 500px;
+    overflow-y: scroll;
+  }
+  .transaction-table th,
+  .transaction-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .transaction-table th {
+    background-color: #f4f4f4;
+  }
+  
+  .transaction-table .amount {
+    text-align: right;
+  }
+  
+  .total-row {
+    font-weight: bold;
+    background-color: #fafafa;
+  }
+  
+  .no-data {
+    text-align: center;
+    color: #999;
+    margin-top: 20px;
+  }
+  

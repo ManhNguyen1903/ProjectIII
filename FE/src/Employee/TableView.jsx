@@ -1,8 +1,9 @@
+// TableView Component
 import React from "react";
 import "./TableView.css";
 import axios from "axios";
 
-function TableView({ tables, onTableSelect, selectedFilter, setSelectedFilter }) {
+function TableView({ tables, onTableSelect, selectedFilter, setSelectedFilter, setTables }) {
   const filteredTables = tables.filter((table) =>
     selectedFilter === "all"
       ? true
@@ -11,45 +12,55 @@ function TableView({ tables, onTableSelect, selectedFilter, setSelectedFilter })
       : table.status === "occupied"
   );
 
-// When table is empty and user selects it to create a new bill
-const handleTableClick = async (id) => {
-  try {
-    const table = tables.find((table) => table._id === id);
+  const handleTableClick = async (id) => {
+    try {
+      const table = tables.find((table) => table._id === id);
 
-    if (!table) {
-      throw new Error("Không tìm thấy bàn");
+      if (!table) {
+        throw new Error("Không tìm thấy bàn");
+      }
+
+      // Nếu bàn trống, tạo hóa đơn mới
+      if (table.status === "empty") {
+        const confirmCreateBill = window.confirm(
+          `Bạn có chắc chắn muốn tạo hóa đơn mới cho bàn ${table.tableName}?`
+        );
+        if (confirmCreateBill) {
+          // Tạo hóa đơn mới
+          await axios.post("http://localhost:8017/api/bills", {
+            idTable: id,
+            billInfo: []
+          });
+
+          // Cập nhật trạng thái bàn thành "occupied"
+          await axios.put(`http://localhost:8017/api/tables/${id}`, {
+            status: "occupied",
+          });
+
+          // Cập nhật lại danh sách bàn
+          setTables(prevTables =>
+            prevTables.map((table) =>
+              table._id === id ? { ...table, status: "occupied" } : table
+            )
+          );
+
+          // alert(`Đã tạo hóa đơn mới cho bàn ${table.tableName}`);
+        }
+      }
+      // Nếu bàn đã có khách, lấy hóa đơn hiện tại
+      else if (table.status === "occupied") {
+        const billResponse = await axios.get(`http://localhost:8017/api/bills/table/${id}`);
+        const currentBill = billResponse.data;
+        console.log(currentBill);
+      }
+
+      onTableSelect(id);
+    } catch (error) {
+      alert("Có lỗi xảy ra khi xử lý chọn bàn");
+      console.error("Lỗi:", error);
     }
+  };
 
-    // If the table is empty, create a new bill for it
-    if (table.status === "empty") {
-      const newBill = await axios.post("http://localhost:8017/api/bills", {
-        idTable: id, // Send table ID only, no products
-        billInfo: []  // Bill starts with no products
-      });
-
-      // Update table status to occupied
-      await axios.put(`http://localhost:8017/api/tables/${id}`, {
-        status: "occupied",
-      });
-
-      alert(`Đã tạo hóa đơn mới cho bàn ${table.tableName}`);
-    }
-    // If the table is occupied, fetch the current bill
-    else if (table.status === "occupied") {
-      const billResponse = await axios.get(`http://localhost:8017/api/bills/table/${id}`);
-      const currentBill = billResponse.data;
-      console.log(currentBill);  // Handle the current bill
-    }
-
-    onTableSelect(id);
-
-  } catch (error) {
-    alert("Có lỗi xảy ra khi xử lý chọn bàn");
-    console.error("Lỗi:", error);
-  }
-};
-
-  
   return (
     <div className="view-table">
       <div className="table-note">
@@ -77,7 +88,7 @@ const handleTableClick = async (id) => {
         {filteredTables.map((table) => (
           <div
             key={table._id}
-            className={`table-item ${table.status === "occupied" ? "occupied" : ""}`}
+            className={`table-item ${table.status}`}
             onClick={() => handleTableClick(table._id)}
           >
             {table.tableName}

@@ -154,11 +154,51 @@ const deleteBill = async (req, res) => {
   }
 };
 
+// UPDATE - Cập nhật trạng thái hóa đơn thành "paid"
+const updateBillStatus = async (req, res) => {
+  const { id } = req.params;  // ID hóa đơn từ request params
+  const { status, dateCheckOut } = req.body; // Nhận thêm dateCheckOut từ body
+
+  // Kiểm tra trạng thái cập nhật hợp lệ
+  if (!['pending', 'processing','complete', 'paid'].includes(status)) {
+    return res.status(400).json({ message: 'Trạng thái không hợp lệ' });
+  }
+
+  try {
+    const bill = await Bill.findById(id); // Tìm hóa đơn theo ID
+
+    if (!bill) {
+      return res.status(404).json({ message: "Hóa đơn không tìm thấy" });
+    }
+
+    // Cập nhật ngày thanh toán (checkout) nếu trạng thái là 'paid'
+    if (status === 'paid' && !bill.dateCheckOut) {
+      bill.dateCheckOut = dateCheckOut || new Date();
+    }
+
+    // Cập nhật trạng thái hóa đơn
+    bill.status = status;
+
+    // Lưu lại hóa đơn đã cập nhật
+    await bill.save();
+
+    res.status(200).json({
+      message: "Hóa đơn đã được cập nhật",
+      bill: bill
+    });
+  } catch (error) {
+    console.error("Lỗi khi cập nhật trạng thái hóa đơn:", error);
+    res.status(500).json({ message: "Lỗi khi cập nhật trạng thái hóa đơn", error });
+  }
+};
+
+
 module.exports = {
   createBill,
   getBillByTableId,
   getBills,
   getBillById,
   updateProductBill,
-  deleteBill
+  deleteBill,
+  updateBillStatus
 };

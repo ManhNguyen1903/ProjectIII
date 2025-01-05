@@ -7,7 +7,7 @@ router.get("/table/:idTable", billController.getBillByTableId); // lấy bill th
 router.get("/", billController.getBills); // Lấy danh sách hóa đơn
 router.get("/:id", billController.getBillById); // Lấy hóa đơn theo ID
 router.patch("/:id", billController.updateProductBill); // Cập nhật hóa đơn
-// router.put("/:id", billController.updateBill); // Cập nhật hóa đơn
+router.put('/:id', billController.updateBillStatus);
 router.delete("/:id", billController.deleteBill); // Xóa hóa đơn
 
 module.exports = router;

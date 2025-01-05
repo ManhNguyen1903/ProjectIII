@@ -6,7 +6,7 @@ const billSchema = new Schema(
     dateCheckIn: { type: Date, default: Date.now },
     dateCheckOut: { type: Date },
     idTable: { type: mongoose.Schema.Types.ObjectId, ref: "TableFood", required: true },
-    status: { type: String, enum: ["pending", "processing", "paid"], default: "pending" },
+    status: { type: String, enum: ["pending", "processing","complete", "paid"], default: "pending" },
     totalPrice: { type: Number, default: 0 },
     discount: { type: Number, default: 0 },
     bartender: { type: String },

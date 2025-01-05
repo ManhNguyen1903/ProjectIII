@@ -13,6 +13,8 @@ function Employee() {
   const [tableList, setTableList] = useState([]);
   const [currentBill, setCurrentBill] = useState(null);
 
+  
+  const selectedTable = tableList.find((table) => table._id === selectedTableId);
   // Fetch danh sách bàn từ API
   useEffect(() => {
     const fetchTables = async () => {
@@ -49,128 +51,108 @@ function Employee() {
       alert("Vui lòng chọn bàn trước khi thêm món!");
       return;
     }
-  
+
     try {
       // Lấy hóa đơn đang mở theo bàn
       const response = await axios.get(`http://localhost:8017/api/bills/table/${selectedTableId}`);
       const bill = response.data;
-  
-      if (bill) {
-        // Thêm sản phẩm vào hóa đơn đang mở
-        await axios.patch(`http://localhost:8017/api/bills/${bill._id}`, {
-          productId: product._id, // Chỉ truyền productId
-        });
-  
-        // Cập nhật hóa đơn trong giao diện
-        setCurrentBill((prevBill) => ({
-          ...prevBill,
-          billInfo: [
-            ...prevBill.billInfo,
-            { productId: product, quantity: 1, note: "" }, // Tạm thời thêm mới cho UI
-          ],
-        }));
-        const selectedTable = tableList.find((table) => table._id === selectedTableId);
 
-        alert(`Đã thêm món "${product.name}" vào hóa đơn bàn ${selectedTable.tableName}`);
+      if (bill) {
+        const confirmAddProduct = window.confirm(
+          `Bạn có chắc chắn muốn thêm món "${product.name}" vào hóa đơn ${selectedTable.tableName}?`
+        );
+        if (confirmAddProduct) {
+          // Thêm sản phẩm vào hóa đơn đang mở
+          await axios.patch(`http://localhost:8017/api/bills/${bill._id}`, {
+            productId: product._id, // Chỉ truyền productId
+          });
+
+          // Cập nhật hóa đơn trong giao diện
+          setCurrentBill((prevBill) => ({
+            ...prevBill,
+            billInfo: [
+              ...prevBill.billInfo,
+              { productId: product, quantity: 1, note: "" }, // Tạm thời thêm mới cho UI
+            ],
+          }));
+        }
       } else {
         // Tạo hóa đơn mới nếu chưa có
         const newBill = await axios.post("http://localhost:8017/api/bills", {
           idTable: selectedTableId,
           billInfo: [{ productId: product._id, quantity: 1, note: "" }],
         });
-  
+
         setCurrentBill(newBill.data);
-  
+
         // Cập nhật danh sách bàn (đổi trạng thái bàn)
         setTableList((prev) =>
           prev.map((table) =>
             table._id === selectedTableId ? { ...table, status: "occupied" } : table
           )
         );
-  
-        alert(`Đã tạo hóa đơn mới cho bàn và thêm món "${product.name}"`);
+
+        //alert(`Đã tạo hóa đơn mới cho bàn và thêm món "${product.name}"`);
       }
     } catch (error) {
       console.error("Lỗi khi thêm sản phẩm vào hóa đơn:", error);
     }
   };
-  
+
   // Xử lý thanh toán
-  // const handlePayment = async () => {
-  //   if (!selectedTableId) {
-  //     alert("Vui lòng chọn bàn để thanh toán.");
-  //     return;
-  //   }
-  
-  //   try {
-  //     const response = await axios.get(
-  //       `http://localhost:8017/api/bills/table/${selectedTableId}`
-  //     );
-  //     const bill = response.data;
-  
-  //     if (bill) {
-  //       // Cập nhật trạng thái hóa đơn thành "đã thanh toán"
-  //       await axios.put(`http://localhost:8017/api/bills/${bill._id}`, {
-  //         status: "paid",
-  //       });
-  //     }
-  
-  //     // Chuyển trạng thái bàn về "trống"
-  //     await axios.put(`http://localhost:8017/api/tables/${selectedTableId}`, {
-  //       status: "empty",
-  //     });
-  
-  //     alert("Thanh toán thành công!");
-  
-  //     // Reset hóa đơn và danh sách bàn
-  //     setCurrentBill(null);
-  //     setSelectedTableId(null);
-  //     setTableList((prevTables) =>
-  //       prevTables.map((table) =>
-  //         table._id === selectedTableId ? { ...table, status: "empty" } : table
-  //       )
-  //     );
-  //   } catch (error) {
-  //     console.error("Lỗi khi thanh toán:", error);
-  //     alert("Có lỗi xảy ra. Vui lòng thử lại.");
-  //   }
-  // };
-  
   const handlePayment = async () => {
     if (!selectedTableId) {
       alert("Vui lòng chọn bàn để thanh toán.");
       return;
     }
-  
+
     try {
-      // Chỉ cần chuyển trạng thái bàn về "trống"
-      await axios.put(`http://localhost:8017/api/tables/${selectedTableId}`, {
-        status: "empty",
-      });
-  
-      alert("Thanh toán thành công!");
-  
-      // Reset hóa đơn và danh sách bàn
-      setCurrentBill(null);
-      setSelectedTableId(null);
-      setTableList((prevTables) =>
-        prevTables.map((table) =>
-          table._id === selectedTableId ? { ...table, status: "empty" } : table
-        )
+      const response = await axios.get(
+        `http://localhost:8017/api/bills/table/${selectedTableId}`
       );
+      const bill = response.data;
+
+      if (bill) {
+        const confirmPayment = window.confirm(
+          `Bạn có chắc chắn muốn thanh toán hóa đơn ${selectedTable.tableName}?`
+        );
+        if(confirmPayment){
+          // Cập nhật trạng thái hóa đơn thành "paid"
+          await axios.put(`http://localhost:8017/api/bills/${bill._id}`, {
+            status: "paid",
+            dateCheckOut: new Date() // Cập nhật thời gian checkout
+          });
+
+          // Cập nhật trạng thái bàn về "empty" sau khi thanh toán
+          await axios.put(`http://localhost:8017/api/tables/${selectedTableId}`, {
+            status: "empty",
+            currentBill: null,  // Xóa hóa đơn hiện tại của bàn
+          });
+
+          alert("Thanh toán thành công!");
+
+          // Cập nhật danh sách bàn
+          setTableList((prevTables) =>
+            prevTables.map((table) =>
+              table._id === selectedTableId ? { ...table, status: "empty" } : table
+            )
+          );
+
+          // Reset thông tin hóa đơn
+          setCurrentBill(null);
+          setSelectedTableId(null);
+        }
+      }
     } catch (error) {
       console.error("Lỗi khi thanh toán:", error);
       alert("Có lỗi xảy ra. Vui lòng thử lại.");
     }
   };
-  
 
   return (
     <div className="employee">
-      {/* Navbar */}
       <Navbar currentView={currentView} setCurrentView={setCurrentView} />
 
-      {/* Nội dung */}
       <div className="content">
         <div className="content-left">
           {currentView === "phongban" && (
@@ -179,6 +161,7 @@ function Employee() {
               onTableSelect={setSelectedTableId}
               selectedFilter={selectedFilter}
               setSelectedFilter={setSelectedFilter}
+              setTables={setTableList} // Chuyển hàm setTables xuống để cập nhật
             />
           )}
           {currentView === "thucdon" && (
