@@ -49,6 +49,9 @@ function Login() {
           case "Nhân viên bếp":
             navigate("/chef");
             break;
+          case "Nhân viên chạy bàn":
+            navigate("/waiter");
+            break;
           default:
             alert("Không có quyền truy cập!");
             break;

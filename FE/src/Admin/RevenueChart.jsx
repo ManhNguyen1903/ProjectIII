@@ -133,6 +133,7 @@ const RevenueChart = () => {
               borderColor: "rgb(1, 24, 9)",
               borderWidth: 1,
             },
+            
           ],
         }}
         options={{
@@ -152,7 +153,7 @@ const RevenueChart = () => {
                   family: 'Arial, sans-serif', // Kiểu chữ
                   weight: 'bold', // Đậm hoặc bình thường
                 },
-                color: '#333', // Màu chữ
+                color: '#000', // Màu chữ
               },
             },
           }}

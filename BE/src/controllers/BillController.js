@@ -51,7 +51,7 @@ const getBillByTableId = async (req, res) => {
     const { idTable } = req.params;
     const bill = await Bill.findOne({
       idTable,
-      status: { $in: ["pending", "processing"] },
+      status: { $in: ["pending", "processing","complete","delivered"] },
     }).populate("idTable").populate("billInfo.productId");
 
     if (!bill) {
@@ -160,7 +160,7 @@ const updateBillStatus = async (req, res) => {
   const { status, dateCheckOut } = req.body; // Nhận thêm dateCheckOut từ body
 
   // Kiểm tra trạng thái cập nhật hợp lệ
-  if (!['pending', 'processing','complete', 'paid'].includes(status)) {
+  if (!['pending', 'processing','complete','delivered', 'paid'].includes(status)) {
     return res.status(400).json({ message: 'Trạng thái không hợp lệ' });
   }
 

@@ -5,6 +5,7 @@ import Admin from "./Admin/Admin";
 import SignUp from "./SignUp/SignUp";
 import Employee from "./Employee/Employee";
 import Chef from "./Chef/Chef";
+import Waiter from "./Waiter/Waiter";
 
 function App() {
   // Kiểm tra trạng thái đăng nhập từ localStorage
@@ -28,6 +29,10 @@ function App() {
         <Route 
           path="/chef" 
           element={isAuthenticated ? <Chef /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/waiter" 
+          element={isAuthenticated ? <Waiter /> : <Navigate to="/" />} 
         />
       </Routes>
     </Router>

@@ -7,9 +7,9 @@
   .chart-filters button {
     padding: 10px 20px;
     margin: 0 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #000000;
     background-color: #f9f9f9;
-    color: #333;
+    color: #000000;
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
@@ -17,8 +17,8 @@
   }
   
   .chart-filters button:hover {
-    background-color: #e6e6e6;
-    border-color: #b3b3b3;
+    background-color: #92a4f5;
+    border-color: #000000;
   }
   
   .chart-filters button.active {

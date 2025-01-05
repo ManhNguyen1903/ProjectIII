@@ -7,6 +7,7 @@ import "./Chef.css";
 function Chef() {
   const [pendingBills, setPendingBills] = useState([]);
   const [processingBills, setProcessingBills] = useState([]);
+  const [completedBills, setCompletedBills] = useState([]);  // Danh sách hóa đơn hoàn thành
   const [selectedBill, setSelectedBill] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -18,6 +19,7 @@ function Chef() {
         const bills = response.data;
         setPendingBills(bills.filter((bill) => bill.status === "pending"));
         setProcessingBills(bills.filter((bill) => bill.status === "processing"));
+        setCompletedBills(bills.filter((bill) => bill.status === "complete")); // Lọc hóa đơn hoàn thành
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu hóa đơn:", error);
       }
@@ -42,6 +44,7 @@ function Chef() {
       // Cập nhật danh sách bill trên giao diện
       setPendingBills(bills.filter((bill) => bill.status === "pending"));
       setProcessingBills(bills.filter((bill) => bill.status === "processing"));
+      setCompletedBills(bills.filter((bill) => bill.status === "complete"));
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái hóa đơn:", error);
     }
@@ -52,22 +55,31 @@ function Chef() {
     setSelectedBill(bill);
     setIsPopupOpen(true);
   };
-  
+
   const handleClosePopup = () => {
     setIsPopupOpen(false);
     setSelectedBill(null);
   };
 
-  const handleComplete = (billId) => {
-    // Cập nhật danh sách hóa đơn sau khi hoàn thành
-    setProcessingBills((prevBills) =>
-      prevBills.map((bill) =>
-        bill._id === billId ? { ...bill, status: "complete" } : bill
-      )
-    );
-    alert("Hóa đơn đã được hoàn thành!");
+  const handleComplete = async (billId) => {
+    try {
+      // Cập nhật trạng thái của hóa đơn thành "complete"
+      await axios.put(`http://localhost:8017/api/bills/${billId}`, { status: "complete" });
+
+      // Fetch lại dữ liệu sau khi cập nhật
+      const response = await axios.get("http://localhost:8017/api/bills");
+      const bills = response.data;
+
+      // Cập nhật lại danh sách hóa đơn
+      setProcessingBills(bills.filter((bill) => bill.status === "processing"));
+      setCompletedBills(bills.filter((bill) => bill.status === "complete"));
+      alert("Hóa đơn đã được hoàn thành!");
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái hóa đơn:", error);
+      alert("Có lỗi khi cập nhật trạng thái hóa đơn.");
+    }
   };
-  
+
   return (
     <div className="chef-page">
       <NavbarChef />
@@ -100,10 +112,10 @@ function Chef() {
 
       {isPopupOpen && (
         <PopUpBillPick 
-        bill={selectedBill} 
-        onClose={handleClosePopup}
-        onComplete={handleComplete}
-         />
+          bill={selectedBill} 
+          onClose={handleClosePopup} 
+          onComplete={handleComplete} 
+        />
       )}
     </div>
   );

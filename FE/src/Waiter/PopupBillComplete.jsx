@@ -1,7 +1,7 @@
 import React from "react";
-import "./PopUpBillPick.css";
+import "./PopUpBillComplete.css";
 
-const PopUpBillPick = ({ bill, onClose, onComplete }) => {
+const PopUpBillComplete= ({ bill, onClose, onComplete }) => {
   if (!bill) return null;
 
   const handleComplete = async () => {
@@ -12,7 +12,7 @@ const PopUpBillPick = ({ bill, onClose, onComplete }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: "complete" }),
+        body: JSON.stringify({ status: "delivered" }),
       });
 
       if (!response.ok) {
@@ -52,10 +52,10 @@ const PopUpBillPick = ({ bill, onClose, onComplete }) => {
           )}
         </div>
         <button className="close" onClick={onClose}>Đóng</button>
-        <button className="DaGiao" onClick={handleComplete}>Hoàn thành.</button>
+        <button className="DaGiao" onClick={handleComplete}>Đã giao</button>
       </div>
     </div>
   );
 };
 
-export default PopUpBillPick;
+export default PopUpBillComplete;
