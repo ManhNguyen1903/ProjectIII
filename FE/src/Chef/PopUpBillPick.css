@@ -1,80 +1,90 @@
-.popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+/* PopUpBillPick.css */
+.popup-bill {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background-color: #fff;
+  width: 90%;
+  max-width: 500px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease-out;
+  position: relative;
+}
+
+.popup-content h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+.popup-content p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.popup-content strong {
+  color: #333;
+}
+
+.popup-content ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.popup-content ul li {
+  font-size: 1rem;
+  color: #444;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.popup-content button {
+  margin: 10px 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.popup-content button:hover {
+  opacity: 0.9;
+}
+
+.popup-content button:nth-child(1) {
+  background-color: #ccc;
+  color: #333;
+}
+
+.popup-content button:nth-child(2) {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* Popup animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
   }
-  
-  .popup-content {
-    background: #e0f7fa;
-    border-radius: 10px;
-    padding: 20px;
-    width: 400px;
-    position: relative;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
-  
-  .popup-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 15px;
-  }
-  
-  .popup-body p {
-    margin: 5px 0;
-    font-size: 16px;
-  }
-  
-  .popup-items {
-    background-color: rgb(255, 255, 255);
-    margin-top: 15px; 
-    overflow-y: auto;
-    max-width: 100%; /* Đảm bảo không vượt quá chiều rộng của phần tử chứa */
-    max-height: 400px; /* Đặt chiều cao tối đa cho phần tử */
-    border-radius: 10px;
-  }
-  
-  .popup-items table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .popup-items th,
-  .popup-items td {
-    text-align: left;
-    padding: 5px;
-    border-bottom: 1px solid #ccc;
-  }
-  .row-end{
-    display: flex;
-  }
-  .close-btn,.complete-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 15px;
-    display: block;
-    width: 100%;
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-  .complete-btn{
-    background: #4caf50;
-    color: white;
-  }
-  .complete-btn:hover {
-    background: #45a049;
-  }
-  .close-btn:hover{
-    background: rgb(211, 37, 37);
-  }
-  
+}

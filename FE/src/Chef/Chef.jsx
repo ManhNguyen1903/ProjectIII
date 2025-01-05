@@ -1,101 +1,110 @@
-import React, { useState } from "react";
-import "./Chef.css";
-import { tableData } from "../Data";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import NavbarChef from "./NavBarChef";
 import PopUpBillPick from "./PopUpBillPick";
+import "./Chef.css";
 
 function Chef() {
-  const [tables, setTables] = useState(tableData);
-  const [transferredTables, setTransferredTables] = useState([]);
+  const [pendingBills, setPendingBills] = useState([]);
+  const [processingBills, setProcessingBills] = useState([]);
+  const [selectedBill, setSelectedBill] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const [selectedTable, setSelectedTable] = useState(null); // Lưu bàn được chọn
-  const [isPopupOpen, setIsPopupOpen] = useState(false); // Quản lý trạng thái Popup
+  // Fetch dữ liệu ban đầu từ API
+  useEffect(() => {
+    const fetchBills = async () => {
+      try {
+        const response = await axios.get("http://localhost:8017/api/bills");
+        const bills = response.data;
+        setPendingBills(bills.filter((bill) => bill.status === "pending"));
+        setProcessingBills(bills.filter((bill) => bill.status === "processing"));
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu hóa đơn:", error);
+      }
+    };
 
-  const handleTransfer = (tableId) => {
-    const tableToTransfer = tables.find((table) => table.id === tableId);
-    if (tableToTransfer) {
-      setTables((prevTables) => prevTables.filter((table) => table.id !== tableId));
-      setTransferredTables((prevTables) => [...prevTables, tableToTransfer]);
-    }
-  };
+    fetchBills();
+  }, []);
+
   const SumItems = (items) => {
     return items.reduce((total, item) => total + item.quantity, 0);
   };
+
+  const handleTransferToProcessing = async (billId) => {
+    try {
+      // Chuyển trạng thái hóa đơn sang "processing"
+      await axios.put(`http://localhost:8017/api/bills/${billId}`, { status: "processing" });
+
+      // Fetch lại danh sách bill sau khi cập nhật
+      const response = await axios.get("http://localhost:8017/api/bills");
+      const bills = response.data;
+
+      // Cập nhật danh sách bill trên giao diện
+      setPendingBills(bills.filter((bill) => bill.status === "pending"));
+      setProcessingBills(bills.filter((bill) => bill.status === "processing"));
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái hóa đơn:", error);
+    }
+  };
+
+  const handleOpenPopup = (billId) => {
+    const bill = processingBills.find((bill) => bill._id === billId);
+    setSelectedBill(bill);
+    setIsPopupOpen(true);
+  };
   
-  const handleOpenPopup = (id) => {
-    const table = transferredTables.find((table) => table.id === id);
-    setSelectedTable(table); // Lưu thông tin bàn
-    setIsPopupOpen(true); // Hiển thị Popup
-  };
-
   const handleClosePopup = () => {
-    setIsPopupOpen(false); // Đóng Popup
-    setSelectedTable(null);
+    setIsPopupOpen(false);
+    setSelectedBill(null);
   };
 
+  const handleComplete = (billId) => {
+    // Cập nhật danh sách hóa đơn sau khi hoàn thành
+    setProcessingBills((prevBills) =>
+      prevBills.map((bill) =>
+        bill._id === billId ? { ...bill, status: "complete" } : bill
+      )
+    );
+    alert("Hóa đơn đã được hoàn thành!");
+  };
+  
   return (
-    <div className="chef">
+    <div className="chef-page">
       <NavbarChef />
-      <div className="Name"> 
-        <div className="Name-order">
-          Order
-        </div>
-        <div className="Name-pick">
-          Pick
-        </div>
-      </div>
-      <div className="chef-content">
-        <div className="chef-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Tên bàn</th>
-                <th>Số lượng món</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tables.map((table) => (
-                <tr key={table.id}>
-                  <td>
-                    <button className="transfer-btn" onClick={() => handleTransfer(table.id)}>
-                      {table.name}
-                    </button>
-                  </td>
-                  <td>{SumItems(table.items)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+      <div className="board-container">
+        <div className="board order">
+          <h2>Order</h2>
+          {pendingBills.map((bill) => (
+            <div key={bill._id} className="board-item">
+              <div className="board-item-name" onClick={() => handleTransferToProcessing(bill._id)}>
+                {bill.idTable?.tableName || "Không rõ"}
+              </div>
+              <div className="board-item-quantity">{SumItems(bill.billInfo)}</div>
+            </div>
+          ))}
         </div>
 
-        <div className="chef-arrow">➔</div>
-
-        <div className="chef-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Tên bàn</th>
-                <th>Số lượng món</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transferredTables.map((table) => (
-                <tr key={table.id}>
-                  <td>
-                    <button className="transfer-btn" onClick={() => handleOpenPopup(table.id)}>
-                      {table.name}
-                    </button>
-                  </td>
-                  <td>{SumItems(table.items)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="board pick">
+          <h2>Pick</h2>
+          {processingBills.map((bill) => (
+            <div key={bill._id} className="board-item">
+              <div className="board-item-name" onClick={() => handleOpenPopup(bill._id)}>
+                {bill.idTable?.tableName || "Không rõ"}
+              </div>
+              <div className="board-item-quantity">{SumItems(bill.billInfo)}</div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Hiển thị Popup */}
-      {isPopupOpen && <PopUpBillPick table={selectedTable} onClose={handleClosePopup} />}
+      {isPopupOpen && (
+        <PopUpBillPick 
+        bill={selectedBill} 
+        onClose={handleClosePopup}
+        onComplete={handleComplete}
+         />
+      )}
     </div>
   );
 }
