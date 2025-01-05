@@ -1,9 +1,8 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import TableView from "./TableView";
 import MenuView from "./MenuView";
 import TransactionView from "./TransactionView";
-import { productsData } from "../Data";
 import "./Employee.css";
 import axios from "axios";
 
@@ -11,15 +10,14 @@ function Employee() {
   const [currentView, setCurrentView] = useState("phongban");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedTableId, setSelectedTableId] = useState(null);
-  const [products, setProducts] = useState(productsData);
-  const [showBillPopup, setShowBillPopup] = useState(false);
-  const [tableList, setTableList] = useState([]); // Đảm bảo bạn quản lý danh sách bàn ở đây
+  const [tableList, setTableList] = useState([]);
+  const [currentBill, setCurrentBill] = useState(null);
 
-
+  // Fetch danh sách bàn từ API
   useEffect(() => {
     const fetchTables = async () => {
       try {
-        const response = await axios.get("http://localhost:8017/api/tables"); // Thay thế bằng endpoint thực tế
+        const response = await axios.get("http://localhost:8017/api/tables");
         setTableList(response.data);
       } catch (error) {
         console.error("Lỗi khi lấy danh sách bàn:", error);
@@ -28,138 +26,171 @@ function Employee() {
     fetchTables();
   }, []);
 
-  const handleAddProduct = (product) => {
+  // Fetch bill details when a table is selected
+  useEffect(() => {
+    if (selectedTableId) {
+      const fetchBill = async () => {
+        try {
+          const response = await axios.get(
+            `http://localhost:8017/api/bills/table/${selectedTableId}`
+          );
+          setCurrentBill(response.data);
+        } catch (error) {
+          console.error("Lỗi khi lấy thông tin hóa đơn:", error);
+        }
+      };
+      fetchBill();
+    }
+  }, [selectedTableId]);
+
+  // Thêm sản phẩm vào hóa đơn
+  const handleAddProduct = async (product) => {
     if (!selectedTableId) {
       alert("Vui lòng chọn bàn trước khi thêm món!");
       return;
     }
-     // Lấy thông tin bàn dựa vào selectedTableId
-    const selectedTable = tableList.find((table) => table._id === selectedTableId);
-
-    const confirmed = window.confirm(
-      `Bạn có chắc chắn muốn thêm món "${product.name}" vào bàn ${selectedTable.tableName}?`
-    );
   
-    if (confirmed) {
-      setProducts((prevProducts) => {
-        const existingProduct = prevProducts.find(
-          (p) => p.id === product.id && p.tableId === selectedTableId
+    try {
+      // Lấy hóa đơn đang mở theo bàn
+      const response = await axios.get(`http://localhost:8017/api/bills/table/${selectedTableId}`);
+      const bill = response.data;
+  
+      if (bill) {
+        // Thêm sản phẩm vào hóa đơn đang mở
+        await axios.patch(`http://localhost:8017/api/bills/${bill._id}`, {
+          productId: product._id, // Chỉ truyền productId
+        });
+  
+        // Cập nhật hóa đơn trong giao diện
+        setCurrentBill((prevBill) => ({
+          ...prevBill,
+          billInfo: [
+            ...prevBill.billInfo,
+            { productId: product, quantity: 1, note: "" }, // Tạm thời thêm mới cho UI
+          ],
+        }));
+        const selectedTable = tableList.find((table) => table._id === selectedTableId);
+
+        alert(`Đã thêm món "${product.name}" vào hóa đơn bàn ${selectedTable.tableName}`);
+      } else {
+        // Tạo hóa đơn mới nếu chưa có
+        const newBill = await axios.post("http://localhost:8017/api/bills", {
+          idTable: selectedTableId,
+          billInfo: [{ productId: product._id, quantity: 1, note: "" }],
+        });
+  
+        setCurrentBill(newBill.data);
+  
+        // Cập nhật danh sách bàn (đổi trạng thái bàn)
+        setTableList((prev) =>
+          prev.map((table) =>
+            table._id === selectedTableId ? { ...table, status: "occupied" } : table
+          )
         );
   
-        if (existingProduct) {
-          // Tăng số lượng nếu sản phẩm đã tồn tại
-          return prevProducts.map((p) =>
-            p.id === product.id && p.tableId === selectedTableId
-              ? { ...p, quantity: p.quantity + 1 }
-              : p
-          );
-        } else {
-          // Thêm sản phẩm mới vào danh sách
-          return [
-            ...prevProducts,
-            { ...product, tableId: selectedTableId, quantity: 1 },
-          ];
-        }
-      });
+        alert(`Đã tạo hóa đơn mới cho bàn và thêm món "${product.name}"`);
+      }
+    } catch (error) {
+      console.error("Lỗi khi thêm sản phẩm vào hóa đơn:", error);
     }
   };
   
-  // Cập nhật trạng thái của bàn khi thanh toán
-  const handlePayment = () => {
-    // Đóng pop-up hóa đơn
-    setShowBillPopup(false);
-    
-    // Deselect table
-    setSelectedTableId(null);
-    
-    // Cập nhật trạng thái bàn về 'empty' và xóa dữ liệu sản phẩm của bàn đó
-    setTableList((prevTables) =>
-      prevTables.map((table) =>
-        table._id === selectedTableId
-          ? { ...table, status: "empty" } // Chuyển trạng thái bàn về "empty"
-          : table
-      )
-    );
-    
-    // Xóa các sản phẩm của bàn đã thanh toán
-    setProducts((prevProducts) =>
-      prevProducts.filter((product) => product.tableId !== selectedTableId)
-    );
-  };
-
-
-  // Tăng số lượng sản phẩm
-  const increaseQuantity = (id) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === id
-          ? { ...product, quantity: product.quantity + 1 }
-          : product
-      )
-    );
-  };
-
-  // Giảm số lượng sản phẩm
-  const decreaseQuantity = (id) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) => {
-        if (product.id === id && product.quantity > 0) {
-          const updatedProduct = { ...product, quantity: product.quantity - 1 };
+  // Xử lý thanh toán
+  // const handlePayment = async () => {
+  //   if (!selectedTableId) {
+  //     alert("Vui lòng chọn bàn để thanh toán.");
+  //     return;
+  //   }
   
-          // Nếu số lượng giảm về 0, xóa sản phẩm khỏi danh sách
-          if (updatedProduct.quantity === 0) {
-            return null; // Trả về null, để loại bỏ sản phẩm này
-          }
+  //   try {
+  //     const response = await axios.get(
+  //       `http://localhost:8017/api/bills/table/${selectedTableId}`
+  //     );
+  //     const bill = response.data;
   
-          return updatedProduct;
-        }
-        return product;
-      }).filter((product) => product !== null) // Loại bỏ các sản phẩm null
-    );
+  //     if (bill) {
+  //       // Cập nhật trạng thái hóa đơn thành "đã thanh toán"
+  //       await axios.put(`http://localhost:8017/api/bills/${bill._id}`, {
+  //         status: "paid",
+  //       });
+  //     }
+  
+  //     // Chuyển trạng thái bàn về "trống"
+  //     await axios.put(`http://localhost:8017/api/tables/${selectedTableId}`, {
+  //       status: "empty",
+  //     });
+  
+  //     alert("Thanh toán thành công!");
+  
+  //     // Reset hóa đơn và danh sách bàn
+  //     setCurrentBill(null);
+  //     setSelectedTableId(null);
+  //     setTableList((prevTables) =>
+  //       prevTables.map((table) =>
+  //         table._id === selectedTableId ? { ...table, status: "empty" } : table
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error("Lỗi khi thanh toán:", error);
+  //     alert("Có lỗi xảy ra. Vui lòng thử lại.");
+  //   }
+  // };
+  
+  const handlePayment = async () => {
+    if (!selectedTableId) {
+      alert("Vui lòng chọn bàn để thanh toán.");
+      return;
+    }
+  
+    try {
+      // Chỉ cần chuyển trạng thái bàn về "trống"
+      await axios.put(`http://localhost:8017/api/tables/${selectedTableId}`, {
+        status: "empty",
+      });
+  
+      alert("Thanh toán thành công!");
+  
+      // Reset hóa đơn và danh sách bàn
+      setCurrentBill(null);
+      setSelectedTableId(null);
+      setTableList((prevTables) =>
+        prevTables.map((table) =>
+          table._id === selectedTableId ? { ...table, status: "empty" } : table
+        )
+      );
+    } catch (error) {
+      console.error("Lỗi khi thanh toán:", error);
+      alert("Có lỗi xảy ra. Vui lòng thử lại.");
+    }
   };
   
-
-  // Tính tổng số tiền cho bàn hiện tại
-  const tableProducts = products.filter(
-    (product) => product.tableId === selectedTableId
-  );
-  const totalAmount = tableProducts.reduce(
-    (total, product) => total + product.quantity * product.price,
-    0
-  );
 
   return (
     <div className="employee">
-      {/* Thanh điều hướng */}
+      {/* Navbar */}
       <Navbar currentView={currentView} setCurrentView={setCurrentView} />
 
-      {/* Nội dung chính */}
+      {/* Nội dung */}
       <div className="content">
         <div className="content-left">
           {currentView === "phongban" && (
             <TableView
-              tables={tableList} // Truyền danh sách bàn đã được cập nhật
-              onTableSelect={setSelectedTableId} // Truyền hàm chọn bàn
-              setTables={setTableList} // Cập nhật lại trạng thái của bàn
+              tables={tableList}
+              onTableSelect={setSelectedTableId}
               selectedFilter={selectedFilter}
               setSelectedFilter={setSelectedFilter}
             />
           )}
-
-          {currentView === "thucdon" && <MenuView onAddProduct={handleAddProduct} />}
+          {currentView === "thucdon" && (
+            <MenuView onAddProduct={handleAddProduct} />
+          )}
         </div>
 
         <div className="content-right">
           <TransactionView
             selectedTableId={selectedTableId}
-            tableData={tableList} // Truyền bảng đã được cập nhật
-            products={tableProducts}
-            increaseQuantity={increaseQuantity}
-            decreaseQuantity={decreaseQuantity}
-            totalAmount={totalAmount}
-            showBillPopup={showBillPopup}
-            setShowBillPopup={setShowBillPopup}
-            handlePayment={handlePayment} // Truyền hàm thanh toán
+            currentBill={currentBill}
+            handlePayment={handlePayment}
           />
         </div>
       </div>

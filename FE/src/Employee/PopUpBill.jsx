@@ -4,7 +4,7 @@ import "./PopUpBill.css";
 const PopUpBill = ({ isVisible, products, totalAmount, onClose, handlePayment }) => {
   if (!isVisible) return null;
 
-  // Hàm in hóa đơn và đóng cửa sổ pop-up và cửa sổ in
+  // Hàm in hóa đơn
   const handlePrint = () => {
     const printWindow = window.open("", "", "height=auto, width=500");
     printWindow.document.write("<html><head><title>Hóa Đơn</title></head><body>");
@@ -28,14 +28,14 @@ const PopUpBill = ({ isVisible, products, totalAmount, onClose, handlePayment })
     printWindow.document.write("</table>");
     printWindow.document.write(`<div><strong>Tổng tiền: ${totalAmount.toLocaleString("vi-VN")}₫</strong></div>`);
     printWindow.document.write("</body></html>");
-    printWindow.document.close(); // Đóng cửa sổ tài liệu để có thể in
-    printWindow.print(); // Gọi lệnh in
+    printWindow.document.close();
+    printWindow.print();
 
-    // Đóng cửa sổ in sau khi in xong
+    // Đóng cửa sổ in sau khi in
     printWindow.onafterprint = () => {
-      printWindow.close(); // Đóng cửa sổ in khi in hoàn tất
+      printWindow.close();
     };
-  }; 
+  };
 
   return (
     <div className="popup">
@@ -66,10 +66,13 @@ const PopUpBill = ({ isVisible, products, totalAmount, onClose, handlePayment })
           <button className="close-btn" onClick={onClose}>
             Đóng
           </button>
-          <button className="print-btn" 
-            onClick={()=>{
-              handlePayment();
-           }}>
+          <button
+            className="print-btn"
+            onClick={() => {
+              handlePrint();
+              handlePayment(); // Thực hiện thanh toán
+            }}
+          >
             In
           </button>
         </div>

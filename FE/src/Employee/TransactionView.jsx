@@ -1,20 +1,18 @@
 import React from "react";
-import PopUpBill from "./PopUpBill";
 import "./TransactionView.css";
 
-function TransactionView({
-  selectedTableId,
-  tableData,
-  products,
-  increaseQuantity,
-  decreaseQuantity,
-  totalAmount,
-  showBillPopup,
-  setShowBillPopup,
-  handlePayment, // Thêm hàm handlePayment
-}) {
-  // Lấy thông tin bàn hiện tại
-  const table = tableData.find((t) => t._id === selectedTableId);
+function TransactionView({ selectedTableId, currentBill, handlePayment }) {
+  const products =
+    currentBill?.billInfo.map((item) => ({
+      id: item.productId._id,
+      name: item.productId.name,
+      price: item.productId.price,
+      quantity: item.quantity,
+    })) || [];
+  const totalAmount = products.reduce(
+    (total, product) => total + product.quantity * product.price,
+    0
+  );
 
   return (
     <div className="transaction">
@@ -28,30 +26,11 @@ function TransactionView({
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product._id}>
-                <td>
-                  {product.name}
-                  <div className="note">
-                    <textarea placeholder="Ghi chú"></textarea>
-                  </div>
-                </td>
-                <td className="quantity-cell">
-                  <button
-                    className="quantity-btn"
-                    onClick={() => decreaseQuantity(product._id)}
-                  >
-                    -
-                  </button>
-                  <span>{product.quantity}</span>
-                  <button
-                    className="quantity-btn"
-                    onClick={() => increaseQuantity(product._id)}
-                  >
-                    +
-                  </button>
-                </td>
-                <td>{product.price.toLocaleString("vi-VN")}₫</td>
+            {products.map((item) => (
+              <tr key={item.id}>
+                <td>{item.name}</td>
+                <td>{item.quantity}</td>
+                <td>{item.price.toLocaleString("vi-VN")}₫</td>
               </tr>
             ))}
           </tbody>
@@ -60,28 +39,20 @@ function TransactionView({
 
       <div className="transaction-summary">
         <div className="notes">
-          <div>{table ? table.tableName : "Chưa chọn bàn"}</div>
+          <div>{currentBill ? currentBill.idTable.tableName : "Chưa chọn bàn"}</div>
         </div>
         <div className="total">
           Tổng tiền: {totalAmount.toLocaleString("vi-VN")}₫
         </div>
       </div>
+
       <button
         className="checkout-btn"
-        onClick={() => {
-          setShowBillPopup(true); // Hiển thị pop-up hóa đơn
-        }}
+        onClick={handlePayment}
+        disabled={!currentBill} // Chỉ bật nút khi có hóa đơn
       >
         Thanh toán
       </button>
-
-      <PopUpBill
-        isVisible={showBillPopup}
-        products={products}
-        totalAmount={totalAmount}
-        onClose={() => setShowBillPopup(false)}
-        handlePayment={handlePayment}
-      />
     </div>
   );
 }

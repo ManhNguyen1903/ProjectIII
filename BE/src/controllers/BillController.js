@@ -1,44 +1,164 @@
-const Bill = require('../models/Bill');
+const mongoose = require("mongoose");
+const Table = require("../models/TableFood");  // Assuming Table model is imported
+const Bill = require("../models/Bill");    
 
-// Lấy tất cả hóa đơn
-exports.getAllBills = async (req, res) => {
+// CREATE - Tạo hóa đơn mới
+const createBill = async (req, res) => {
   try {
-    const bills = await Bill.find().populate('idTable').populate('billInfo.productId');
-    res.json(bills);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    const { idTable, billInfo = [] } = req.body;
+
+    // Kiểm tra thông tin bàn và hóa đơn
+    if (!idTable) {
+      return res.status(400).json({ message: "Table ID is required." });
+    }
+
+    // Kiểm tra nếu bàn đã tồn tại và có trạng thái là 'empty'
+    const table = await Table.findById(idTable); 
+    if (!table) {
+      return res.status(404).json({ message: "Table not found." });
+    }
+    
+    // Nếu trạng thái bàn không phải 'empty', trả về lỗi
+    if (table.status !== 'empty') {
+      return res.status(400).json({ message: "The table is not empty." });
+    }
+
+    // Tạo hóa đơn mới với trạng thái 'pending'
+    const newBill = new Bill({
+      idTable,
+      billInfo: billInfo, // Mới tạo không có món ăn, chỉ có billInfo rỗng
+      status: "pending",  // Hóa đơn được tạo với trạng thái pending
+      totalPrice: 0,      // Tổng giá ban đầu là 0
+    });
+
+    // Lưu hóa đơn vào cơ sở dữ liệu
+    const savedBill = await newBill.save();
+
+    // Cập nhật trạng thái bàn thành 'occupied'
+    table.status = "occupied";
+    await table.save();
+
+    // Trả về hóa đơn mới vừa tạo
+    res.status(201).json(savedBill);  // Trả lại hóa đơn đã được tạo thành công
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error creating bill", error });
   }
 };
 
-// Lấy hóa đơn theo ID
-exports.getBillById = async (req, res) => {
+const getBillByTableId = async (req, res) => {
   try {
-    const bill = await Bill.findById(req.params.id).populate('idTable').populate('billInfo.productId');
-    if (!bill) return res.status(404).json({ message: "Bill not found" });
-    res.json(bill);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    const { idTable } = req.params;
+    const bill = await Bill.findOne({
+      idTable,
+      status: { $in: ["pending", "processing"] },
+    }).populate("idTable").populate("billInfo.productId");
+
+    if (!bill) {
+      return res.status(404).json({ message: "No active bill found for this table" });
+    }
+
+    res.status(200).json(bill);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching bill for table", error });
   }
 };
 
-// Tạo một hóa đơn mới
-exports.createBill = async (req, res) => {
+// READ - Lấy danh sách hóa đơn
+const getBills = async (req, res) => {
   try {
-    const newBill = new Bill(req.body);
-    await newBill.save();
-    res.status(201).json(newBill);
-  } catch (err) {
-    res.status(500).json({ message: "Error creating bill" });
+    const bills = await Bill.find().populate("idTable").populate("billInfo.productId");
+    res.status(200).json(bills);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching bills", error });
   }
 };
 
-// Cập nhật trạng thái hóa đơn (Thanh toán, đang xử lý...)
-exports.updateBillStatus = async (req, res) => {
+// READ - Lấy một hóa đơn theo ID
+const getBillById = async (req, res) => {
   try {
-    const bill = await Bill.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
-    if (!bill) return res.status(404).json({ message: "Bill not found" });
-    res.json(bill);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    const bill = await Bill.findById(req.params.id)
+      .populate("idTable")
+      .populate("billInfo.productId");
+    if (!bill) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+    res.status(200).json(bill);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching bill", error });
   }
+};
+
+// UPDATE - Cập nhật hóa đơn
+const updateProductBill = async (req, res) => {
+  const session = await mongoose.startSession(); // Bắt đầu session
+  session.startTransaction();
+
+  try {
+    const { id } = req.params; // ID hóa đơn
+    const { productId } = req.body; // ID sản phẩm, số lượng mặc định là 1
+
+    // Kiểm tra hóa đơn
+    const bill = await Bill.findById(id).session(session);
+    if (!bill) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+
+    // Kiểm tra nếu sản phẩm đã tồn tại trong hóa đơn
+    const productIndex = bill.billInfo.findIndex(
+      (item) => item.productId.toString() === productId
+    );
+
+    if (productIndex > -1) {
+      // Sản phẩm đã tồn tại => Tăng số lượng lên 1
+      bill.billInfo[productIndex].quantity += 1;
+    } else {
+      // Sản phẩm chưa tồn tại => Thêm vào hóa đơn
+      bill.billInfo.push({ productId, quantity: 1, note: "" });
+    }
+
+    // Cập nhật tổng giá hóa đơn
+    await bill.populate("billInfo.productId");
+    bill.totalPrice = bill.billInfo.reduce((total, item) => {
+      return total + item.quantity * (item.productId.price || 0);
+    }, 0);
+
+    // Lưu hóa đơn
+    await bill.save({ session });
+
+    // Commit transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json(bill);
+  } catch (error) {
+    // Rollback transaction nếu lỗi
+    await session.abortTransaction();
+    session.endSession();
+
+    console.error("Error updating bill:", error);
+    res.status(500).json({ message: "Error updating bill", error });
+  }
+};
+
+// DELETE - Xóa hóa đơn
+const deleteBill = async (req, res) => {
+  try {
+    const deletedBill = await Bill.findByIdAndDelete(req.params.id);
+    if (!deletedBill) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+    res.status(200).json({ message: "Bill deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting bill", error });
+  }
+};
+
+module.exports = {
+  createBill,
+  getBillByTableId,
+  getBills,
+  getBillById,
+  updateProductBill,
+  deleteBill
 };
