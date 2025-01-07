@@ -6,6 +6,8 @@ function MenuView({ onAddProduct }) {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeFilter, setActiveFilter] = useState("Tất cả");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [note, setNote] = useState("");
 
   useEffect(() => {
     const fetchProductsAndCategories = async () => {
@@ -18,7 +20,7 @@ function MenuView({ onAddProduct }) {
         console.error("Error fetching products or categories:", error);
       }
     };
-  
+
     fetchProductsAndCategories();
   }, []);
 
@@ -26,6 +28,19 @@ function MenuView({ onAddProduct }) {
     activeFilter === "Tất cả"
       ? products
       : products.filter((product) => product.category.name === activeFilter);
+
+  const handleConfirmAdd = () => {
+    if (selectedProduct) {
+      onAddProduct({ ...selectedProduct, note });
+      setSelectedProduct(null); // Đóng popup
+      setNote(""); // Reset ghi chú
+    }
+  };
+
+  const handleCancel = () => {
+    setSelectedProduct(null); // Đóng popup
+    setNote(""); // Reset ghi chú
+  };
 
   return (
     <div className="view">
@@ -48,7 +63,7 @@ function MenuView({ onAddProduct }) {
           <div
             key={product._id}
             className="menu-item"
-            onClick={() => onAddProduct(product)} // Gọi hàm khi nhấn vào sản phẩm
+            onClick={() => setSelectedProduct(product)} // Hiển thị popup khi chọn sản phẩm
           >
             <img src={product.image} alt={product.name} />
             <div className="name">{product.name}</div>
@@ -56,9 +71,36 @@ function MenuView({ onAddProduct }) {
           </div>
         ))}
       </div>
+
+      {selectedProduct && (
+        <div className="popup">
+          <div className="popup-content">
+            <h3>Thêm sản phẩm: {selectedProduct.name}</h3>
+            <label htmlFor="note" className="note-label">
+              Nhập ghi chú:
+            </label>
+            <input
+              type="text"
+              id="note"
+              className="note-input"
+              placeholder="Nhập ghi chú (nếu có)"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+            <div className="popup-buttons">
+              <button className="confirm-button" onClick={handleConfirmAdd}>
+                Xác nhận
+              </button>
+              <button className="cancel-button" onClick={handleCancel}>
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
 
 export default MenuView;
-

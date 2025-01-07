@@ -36,10 +36,9 @@ const EditCategory = ({ isOpen, category, onClose, onUpdate, onDelete }) => {
           <h2>Chỉnh sửa danh mục</h2>
           <button className="close-button" onClick={onClose}>&times;</button>
         </div>
-
         <div>
           <label>Tên danh mục:</label>
-          <input
+          <input 
             type="text"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}

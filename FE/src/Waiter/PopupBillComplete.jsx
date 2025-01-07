@@ -35,8 +35,7 @@ const PopUpBillComplete= ({ bill, onClose, onComplete }) => {
   return (
     <div className="popup-bill">
       <div className="popup-content">
-        <h2>Chi tiết hóa đơn</h2>
-        <p><strong>Bàn:</strong> {bill.idTable.tableName || "Không rõ"}</p>
+        <p><strong></strong> {bill.idTable.tableName || "Không rõ"}</p>
         <div>
           <strong>Danh sách:</strong>
           {bill.billInfo.length > 0 ? (
@@ -44,6 +43,9 @@ const PopUpBillComplete= ({ bill, onClose, onComplete }) => {
               {bill.billInfo.map((item) => (
                 <li key={item._id}>
                   {item.productId.name} - SL: {item.quantity}
+                  {item.note && (
+                    <div><strong>Ghi chú:</strong> {item.note}</div>
+                  )}
                 </li>
               ))}
             </ul>

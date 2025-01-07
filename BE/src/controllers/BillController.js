@@ -96,7 +96,7 @@ const updateProductBill = async (req, res) => {
 
   try {
     const { id } = req.params; // ID hóa đơn
-    const { productId } = req.body; // ID sản phẩm, số lượng mặc định là 1
+    const { productId, note } = req.body; // ID sản phẩm, số lượng mặc định là 1 và ghi chú
 
     // Kiểm tra hóa đơn
     const bill = await Bill.findById(id).session(session);
@@ -104,17 +104,18 @@ const updateProductBill = async (req, res) => {
       return res.status(404).json({ message: "Bill not found" });
     }
 
-    // Kiểm tra nếu sản phẩm đã tồn tại trong hóa đơn
+    // Tìm sản phẩm với cùng productId và ghi chú note trong billInfo
     const productIndex = bill.billInfo.findIndex(
-      (item) => item.productId.toString() === productId
+      (item) =>
+        item.productId.toString() === productId && item.note === note // Kiểm tra cả productId và note
     );
 
     if (productIndex > -1) {
-      // Sản phẩm đã tồn tại => Tăng số lượng lên 1
+      // Sản phẩm đã tồn tại với cùng note => Tăng số lượng
       bill.billInfo[productIndex].quantity += 1;
     } else {
-      // Sản phẩm chưa tồn tại => Thêm vào hóa đơn
-      bill.billInfo.push({ productId, quantity: 1, note: "" });
+      // Sản phẩm chưa tồn tại hoặc note khác => Thêm sản phẩm mới vào hóa đơn
+      bill.billInfo.push({ productId, quantity: 1, note: note || "" });
     }
 
     // Cập nhật tổng giá hóa đơn
@@ -140,6 +141,7 @@ const updateProductBill = async (req, res) => {
     res.status(500).json({ message: "Error updating bill", error });
   }
 };
+
 
 // DELETE - Xóa hóa đơn
 const deleteBill = async (req, res) => {

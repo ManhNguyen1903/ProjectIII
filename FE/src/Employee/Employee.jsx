@@ -51,53 +51,47 @@ function Employee() {
       alert("Vui lòng chọn bàn trước khi thêm món!");
       return;
     }
-
+  
     try {
-      // Lấy hóa đơn đang mở theo bàn
       const response = await axios.get(`http://localhost:8017/api/bills/table/${selectedTableId}`);
       const bill = response.data;
-
+  
       if (bill) {
         const confirmAddProduct = window.confirm(
           `Bạn có chắc chắn muốn thêm món "${product.name}" vào hóa đơn ${selectedTable.tableName}?`
         );
         if (confirmAddProduct) {
-          // Thêm sản phẩm vào hóa đơn đang mở
           await axios.patch(`http://localhost:8017/api/bills/${bill._id}`, {
-            productId: product._id, // Chỉ truyền productId
+            productId: product._id,
+            note: product.note, // Sử dụng note được truyền từ MenuView
           });
-
-          // Cập nhật hóa đơn trong giao diện
+  
           setCurrentBill((prevBill) => ({
             ...prevBill,
             billInfo: [
               ...prevBill.billInfo,
-              { productId: product, quantity: 1, note: "" }, // Tạm thời thêm mới cho UI
+              { productId: product, quantity: 1, note: product.note },
             ],
           }));
         }
       } else {
-        // Tạo hóa đơn mới nếu chưa có
         const newBill = await axios.post("http://localhost:8017/api/bills", {
           idTable: selectedTableId,
-          billInfo: [{ productId: product._id, quantity: 1, note: "" }],
+          billInfo: [{ productId: product._id, quantity: 1, note: product.note }],
         });
-
+  
         setCurrentBill(newBill.data);
-
-        // Cập nhật danh sách bàn (đổi trạng thái bàn)
         setTableList((prev) =>
           prev.map((table) =>
             table._id === selectedTableId ? { ...table, status: "occupied" } : table
           )
         );
-
-        //alert(`Đã tạo hóa đơn mới cho bàn và thêm món "${product.name}"`);
       }
     } catch (error) {
       console.error("Lỗi khi thêm sản phẩm vào hóa đơn:", error);
     }
   };
+  
 
   // Xử lý thanh toán
   const handlePayment = async () => {

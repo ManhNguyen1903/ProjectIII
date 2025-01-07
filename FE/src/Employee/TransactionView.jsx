@@ -8,7 +8,9 @@ function TransactionView({ selectedTableId, currentBill, handlePayment }) {
       name: item.productId.name,
       price: item.productId.price,
       quantity: item.quantity,
+      note: item.note || "", // Lấy ghi chú nếu có
     })) || [];
+
   const totalAmount = products.reduce(
     (total, product) => total + product.quantity * product.price,
     0
@@ -23,6 +25,7 @@ function TransactionView({ selectedTableId, currentBill, handlePayment }) {
               <th>Tên sản phẩm</th>
               <th>Số lượng</th>
               <th>Bảng giá</th>
+              <th>Ghi chú</th>
             </tr>
           </thead>
           <tbody>
@@ -31,6 +34,7 @@ function TransactionView({ selectedTableId, currentBill, handlePayment }) {
                 <td>{item.name}</td>
                 <td>{item.quantity}</td>
                 <td>{item.price.toLocaleString("vi-VN")}₫</td>
+                <td>{item.note}</td> {/* Hiển thị ghi chú */}
               </tr>
             ))}
           </tbody>

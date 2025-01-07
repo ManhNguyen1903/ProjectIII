@@ -129,36 +129,73 @@ const RevenueChart = () => {
             {
               label: "Doanh thu (VNĐ)",
               data: chartData.dataset,
-              backgroundColor: "rgba(18, 207, 43, 0.5)",
+              backgroundColor: "rgba(0, 255, 34, 0.5)",
               borderColor: "rgb(1, 24, 9)",
               borderWidth: 1,
             },
-            
           ],
         }}
         options={{
-            responsive: true,
-            plugins: {
-              title: {
-                display: true,
-                text: `Doanh thu ${
-                  viewType === "daily"
-                    ? "theo ngày"
-                    : viewType === "monthly"
-                    ? "theo tháng"
-                    : "theo năm"
-                }`,
-                font: {
-                  size: 20, // Kích thước phông chữ
-                  family: 'Arial, sans-serif', // Kiểu chữ
-                  weight: 'bold', // Đậm hoặc bình thường
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: `Doanh thu ${
+                viewType === "daily"
+                  ? "theo ngày"
+                  : viewType === "monthly"
+                  ? "theo tháng"
+                  : "theo năm"
+              }`,
+              font: {
+                size: 24, // Larger font size for title
+                family: 'Arial, sans-serif',
+                weight: 'bold',
+              },
+              color: '#000', // Title text color black
+            },
+            tooltip: {
+              bodyFont: {
+                size: 16, // Larger font size for tooltip body text
+                family: 'Arial, sans-serif',
+                weight: 'normal',
+              },
+              titleFont: {
+                size: 18, // Larger font size for tooltip title text
+                family: 'Arial, sans-serif',
+                weight: 'bold',
+              },
+              callbacks: {
+                title: (tooltipItems) => {
+                  return tooltipItems[0].label; // Customize tooltip title
                 },
-                color: '#000', // Màu chữ
               },
             },
-          }}
-          
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#000', // Set x-axis tick text to black
+                font: {
+                  size: 16, // Larger font size for x-axis labels
+                  weight: 'bold',
+                },
+              },
+            },
+            y: {
+              ticks: {
+                color: '#000', // Set y-axis tick text to black
+                font: {
+                  size: 16, // Larger font size for y-axis labels
+                  weight: 'bold',
+                },
+              },
+            },
+          },
+        }}
       />
+
+
     </div>
   );
 };
