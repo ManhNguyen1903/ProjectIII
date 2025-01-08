@@ -1,0 +1,60 @@
+.close-button:hover {
+    background-color: #c82333;
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+    font-size: 14px;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+  }
+  
+  select:focus {
+    border-color: #4caf50;
+    background-color: #eaf6e9;
+    outline: none;
+  }
+  
+  select option {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  /* Cải thiện kiểu chọn khi hover */
+  select:hover {
+    border-color: #4caf50;
+  }
+  
+  /* Đưa hướng dẫn màu sắc cho các lựa chọn */
+  option[value="available"] {
+    background-color: #e0f7e0; /* Màu xanh lá cây cho 'Còn trống' */
+  }
+  
+  option[value="occupied"] {
+    background-color: #cc2927; /* Màu đỏ cho 'Đang sử dụng' */
+  }
+  
+  option[value="reserved"] {
+    background-color: #ffeb3b; /* Màu vàng cho 'Đã đặt' */
+  }
+  
+  /* Thêm icon để dễ nhận diện */
+  select::-ms-expand {
+    display: none; /* Ẩn icon mặc định trên IE */
+  }
+  
+  

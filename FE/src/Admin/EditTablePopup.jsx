@@ -45,13 +45,16 @@ function EditTablePopup({ table, onClose, onEdit, onDelete }) {
         {/* Các trường khác nếu cần */}
         <div className="form-group">
           <label>Trạng thái:</label>
-          <input
+          <select
             name="status"
             value={updatedTable.status || ""}
             onChange={handleChange}
-          />
+          >
+            <option value="available">Còn trống</option>
+            <option value="occupied">Đang sử dụng</option>
+          </select>
         </div>
-
+ 
         <div className="popup-buttons">
           <button className="delete-button" onClick={handleDelete}>
             Xóa

@@ -60,20 +60,20 @@ function Employee() {
         const confirmAddProduct = window.confirm(
           `Bạn có chắc chắn muốn thêm món "${product.name}" vào hóa đơn ${selectedTable.tableName}?`
         );
-        if (confirmAddProduct) {
-          await axios.patch(`http://localhost:8017/api/bills/${bill._id}`, {
-            productId: product._id,
-            note: product.note, // Sử dụng note được truyền từ MenuView
-          });
-  
-          setCurrentBill((prevBill) => ({
-            ...prevBill,
-            billInfo: [
-              ...prevBill.billInfo,
-              { productId: product, quantity: 1, note: product.note },
-            ],
-          }));
-        }
+        
+        await axios.patch(`http://localhost:8017/api/bills/${bill._id}`, {
+          productId: product._id,
+          note: product.note, // Sử dụng note được truyền từ MenuView
+        });
+
+        setCurrentBill((prevBill) => ({
+          ...prevBill,
+          billInfo: [
+            ...prevBill.billInfo,
+            { productId: product, quantity: 1, note: product.note },
+          ],
+        }));
+       
       } else {
         const newBill = await axios.post("http://localhost:8017/api/bills", {
           idTable: selectedTableId,
@@ -150,7 +150,7 @@ function Employee() {
       <div className="content">
         <div className="content-left">
           {currentView === "phongban" && (
-            <TableView
+              <TableView
               tables={tableList}
               onTableSelect={setSelectedTableId}
               selectedFilter={selectedFilter}

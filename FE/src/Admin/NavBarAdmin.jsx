@@ -22,7 +22,6 @@ function NavBarAdmin() {
         <div className="dropdown">
           <button className="dropbtn">☰</button>
           <div className="dropdown-content">
-            <a href="#">Cài đặt</a>
             <a href="#" onClick={handleLogout}>
               Đăng xuất
             </a>
